@@ -1,6 +1,6 @@
 // *************************************
 //
-// # jigsass-object-grid Intro
+// # jigsass-objects-grid Intro
 // -> Introduction doclets
 //
 // *************************************
@@ -45,7 +45,7 @@ for consistent [resposive breakpoints](https://github.com/txhawks/jigsass-tools-
 Using npm:
 
 ```sh
-npm i -S jigsass-object-grid
+npm i -S jigsass-objects-grid
 ```
 
 
@@ -100,7 +100,7 @@ to be available in CSS (see [usage](#usage) below).
 First, you would need to import JigSass Grid:
 
 ```scss
-@import 'path/to/jigsass-object-grid/scss/index'
+@import 'path/to/jigsass-objects-grid/scss/index'
 ```
 
 And optionally [reconfigure](#configuration) the defaults to you liking.
@@ -121,16 +121,16 @@ This way our css remains small and maintainable:
 ```
 
 Regardless of how many times a class is included, or where, it will only be generated once, where
-`jigsass-object-grid` was imported to our main sass file, leaving us with a css file as small as
+`jigsass-objects-grid` was imported to our main sass file, leaving us with a css file as small as
 possible, and a predictable cascade for more example, see [here](#responsive).
 
 
 
-[npm-image]: https://badge.fury.io/js/jigsass-object-grid.svg
-[npm-url]: https://npmjs.org/package/jigsass-object-grid
+[npm-image]: https://badge.fury.io/js/jigsass-objects-grid.svg
+[npm-url]: https://npmjs.org/package/jigsass-objects-grid
 
-[daviddm-image]: https://david-dm.org/TxHawks/jigsass-object-grid.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/TxHawks/jigsass-object-grid
+[daviddm-image]: https://david-dm.org/TxHawks/jigsass-objects-grid.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/TxHawks/jigsass-objects-grid
 */
 
 
@@ -230,7 +230,7 @@ go into effect at `(min-width: 64em) and (orientation: landscape)` and will over
 the default class from that point on.
 
 Regardless of how many times a class is included, or where, it will only be generated once, where
-`jigsass-object-grid` was imported, leaving us with a css file as small as possible,
+`jigsass-objects-grid` was imported, leaving us with a css file as small as possible,
 and a predictable cascade.
 */
 

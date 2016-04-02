@@ -15,7 +15,7 @@ for consistent [resposive breakpoints](https://github.com/txhawks/jigsass-tools-
 Using npm:
 
 ```sh
-npm i -S jigsass-object-grid
+npm i -S jigsass-objects-grid
 ```
 
 
@@ -70,7 +70,7 @@ to be available in CSS
 First, you would need to import JigSass Grid:
 
 ```scss
-@import 'path/to/jigsass-object-grid/scss/index'
+@import 'path/to/jigsass-objects-grid/scss/index'
 ```
 
 And optionally [reconfigure](https://txhawks.github.io/jigsass-objects-grid/#configuration) the defaults to your liking.
@@ -91,7 +91,7 @@ This way our css remains small and maintainable:
 ```
 
 Regardless of how many times a class is included, or where, it will only be generated once, where
-`jigsass-object-grid` was imported to our main sass file, leaving us with a css file as small as
+`jigsass-objects-grid` was imported to our main sass file, leaving us with a css file as small as
 possible, and a predictable cascade for more example, see [here](https://txhawks.github.io/jigsass-objects-grid/#responsive).
 
 ## Contributing
@@ -142,8 +142,8 @@ In addition, any file in `sgSrc/assets` will be available for use in the style g
 
 
 
-[npm-image]: https://badge.fury.io/js/jigsass-object-grid.svg
-[npm-url]: https://npmjs.org/package/jigsass-object-grid
+[npm-image]: https://badge.fury.io/js/jigsass-objects-grid.svg
+[npm-url]: https://npmjs.org/package/jigsass-objects-grid
 
-[daviddm-image]: https://david-dm.org/TxHawks/jigsass-object-grid.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/TxHawks/jigsass-object-grid
+[daviddm-image]: https://david-dm.org/TxHawks/jigsass-objects-grid.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/TxHawks/jigsass-objects-grid

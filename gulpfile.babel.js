@@ -54,7 +54,7 @@ gulp.task('sass:sg', ['sass:lint', 'clean'], () => {
         autoprefixer({ browsers: ['> 1%', 'last 2 versions', 'ie > 7'] }),
         mdcss({
           theme: jigsassMdcss({
-            title: 'jigsass-object-grid',
+            title: 'jigsass-objects-grid',
             examples: {
               css: ['assets/sg.css'],
             },

@@ -1,6 +1,6 @@
 // *************************************
 //
-// # jigsass-object-grid Config
+// # jigsass-objects-grid Config
 // -> Configuration variables
 //
 ////
@@ -16,19 +16,19 @@
 // -------------------------------------
 
 @if (not function-exists(jigsass-get)) {
-  @error '`jigsass-object-grid` has a dependency on `jigsass-tools-maps. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-maps. Please import it.'
 }
 @if (not mixin-exists(jigsass-mq)) {
-  @error '`jigsass-object-grid` has a dependency on `jigsass-tools-mq. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-mq. Please import it.'
 }
 @if (not function-exists(jigsass-rhythm)) {
-  @error '`jigsass-object-grid` has a dependency on `jigsass-tools-typography`. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-typography`. Please import it.'
 }
 @if (not mixin-exists(jigsass-object)) {
-  @error '`jigsass-object-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
 }
 @if (not mixin-exists(jigsass-bidi)) {
-  @error '`jigsass-object-grid` has a dependency on `jigsass-tools-bidi`. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.'
 }
 
 
@@ -749,7 +749,7 @@ Will Generate:
   the default class from that point on.
 
   Regardless of how many times a class is included, or where, it will only be generated once, where
-  `jigsass-object-grid` was imported, leaving us with a css file as small as possible,
+  `jigsass-objects-grid` was imported, leaving us with a css file as small as possible,
   and a predictable cascade.
 
 

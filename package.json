@@ -1,5 +1,5 @@
 {
-  "name": "jigsass-object-grid",
+  "name": "jigsass-objects-grid",
   "author": {
     "name": "TxHawks",
     "email": "tofu.hawks@gmail.com"
@@ -12,10 +12,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "TxHawks/jigsass-object-grid"
+    "url": "TxHawks/jigsass-objects-grid"
   },
   "bugs": {
-    "bugs": "TxHawks/jigsass-object-grid/issues"
+    "bugs": "TxHawks/jigsass-objects-grid/issues"
   },
   "keywords": [
     "jigsass",
