@@ -1,0 +1,326 @@
+// *************************************
+//
+// # jigsass-object-grid Intro
+// -> Introduction doclets
+//
+// *************************************
+
+@charset 'UTF-8';
+
+// A mixin to create variable scope
+@mixin _jigsass-grid-doclet-var-scope {
+  @content;
+}
+
+
+// -------------------------------------
+// Intoduction
+// -------------------------------------
+@include _jigsass-grid-doclet-var-scope {
+  $_ns: if($jigsass-namespace == '', '', #{$jigsass-namespace}-);
+  $_grid-class: #{$_ns}#{$jigsass-grid-class};
+  $_item-class: #{$_ns}#{$jigsass-grid-item-class};
+  $_grid-anchor: '#' + $_grid-class;
+  $_item-anchor: '#' + $_item-class;
+
+// stylelint-disable
+/* ---
+section: Grid
+title: Introduction
+order: -10
+---
+
+[![NPM version][npm-image]][npm-url]  [![Dependency Status][daviddm-image]][daviddm-url]
+
+JigSass Grid is a responsive Sass (SCSS) flexbox-based grid
+system, with a `display: inline-block` fallback backed in, where possible.
+
+It is intended to be both flexible (pun intended) and easy to use. As part of the
+JigSass ecosystem, JigSass Grid integrates with its other modules, relying on some of them
+for consistent [resposive breakpoints](https://github.com/txhawks/jigsass-tools-mq/),
+[sizing](https://github.com/txhawks/jigsass-tools-typography/) and more.
+
+#### Installation
+
+Using npm:
+
+```sh
+npm i -S jigsass-object-grid
+```
+
+
+#### Features
+  - [Responsive](#responsive).
+  - [Infinitly nestable](#nested-grids).
+  - [Fixed fluid](#fixed-fluid) layouts.
+  - Column wrapping.
+  - [Equal height columns](#{$_grid-anchor}--equal-height).
+  - Automatic distribution of widths.
+  - Custom horizontal alignments of items <br />
+    ([start](#{$_grid-anchor}-start),
+    [center](#{$_grid-anchor}-center),
+    [end](#{$_grid-anchor}-end),
+    [reversed](#{$_grid-anchor}-rev),
+    [space-between](#{$_grid-anchor}-space-between),
+    [space-around](#{$_grid-anchor}-space-around)).
+  - Custom vertical alignments of items ([top](#{$_grid-anchor}-top),
+    [middle](#{$_grid-anchor}-middle),
+    [bottom](#{$_grid-anchor}-bottom)).
+  - Fluid by default.
+  - Configureable grid-wide gutters widths.
+  - Overrideable gutter widths on a per-item basis.
+  - Built in gutter rules support.
+  - Offsets.
+
+
+#### Availeable classes
+All classes and each modifier (including responsive modifiers) must be explicitly `@include`d
+to be available in CSS (see [usage](#usage) below).
+
+
+** Grid containers:**<br />
+`.#{$_grid-class}`
+  - `--start`, `--center`, `--end`, `--rev`, `--space-between`, `--space-around`
+  - `--top`, `--middle`, `--bottom`, `--equal-height`
+  - `--gutter-X` (gutter width, See [here](#gutter-width-modifiers)).
+
+
+** Grid items:**<br />
+`.#{$_item-class}`
+  - `--col`, `--center, `
+  - `--top`, `--middle`, `--bottom`, `--equal-height`
+  - `--gutter-X` (gutter width, See [here](#gutter-width-modifiers)).
+  - `--gutter-gutter-rule-X` (See [here](#gutter-rules)).
+  - `--X-of-Y`
+  - `--offset-X-of-Y`
+
+
+#### Usage
+
+First, you would need to import JigSass Grid:
+
+```scss
+@import 'path/to/jigsass-object-grid/scss/index'
+```
+
+And optionally [reconfigure](#configuration) the defaults to you liking.
+
+To create a grid context, simply attach the #{$_grid-class} class to an element, Any element,
+which will serve as a grid container. You can now add grid items to it (with a class of
+#{$_item-class}). Grid containers' only legitimate children are grid items, and those, in turen,
+may only reside within a grid container.
+
+Like all other JigSass modules, JigSass Grid does not automatically generate any CSS on import.
+In order to use its classes, you would have to first explicitly indicate your intention to use
+them, using the [jigsass-grid](#jigsass-grid) or [jigsass-grid-item](#jigsass-grid-item) mixins.
+This way our css remains small and maintainable:
+
+```scss
+@include jigsass-grid([$modifier, $from-brekpoint, $until-breakpoint, $misc-breakpoint]);
+@include jigsass-grid-item([$modifier, $from-brekpoint, $until-breakpoint, $misc-breakpoint]);
+```
+
+Regardless of how many times a class is included, or where, it will only be generated once, where
+`jigsass-object-grid` was imported to our main sass file, leaving us with a css file as small as
+possible, and a predictable cascade for more example, see [here](#responsive).
+
+
+
+[npm-image]: https://badge.fury.io/js/jigsass-object-grid.svg
+[npm-url]: https://npmjs.org/package/jigsass-object-grid
+
+[daviddm-image]: https://david-dm.org/TxHawks/jigsass-object-grid.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/TxHawks/jigsass-object-grid
+*/
+
+
+
+
+
+// -------------------------------------
+// Usage Recepies
+// -------------------------------------
+
+$_ratio: nth($jigsass-grid-cols, 1);
+$_html: '<section class="#{$_grid-class}">';
+
+@for $i from 1 through $_ratio {
+  // Create HTML example:
+  $_base-class: '#{$_item-class} ';
+  $_classes: '';
+
+  @if ($i == $_ratio) {
+    $_classes: $_base-class + '#{$_item-class}--#{$_ratio}-of-#{$_ratio} ';
+
+    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+  }
+  @else if ($i % 2 == 0) {
+    $_classes: $_base-class +
+      '#{$_item-class}--#{$_ratio / 2}-of-#{$_ratio} ' +
+      '#{$_item-class}--#{$i}-of-#{$_ratio}--from-medium';
+
+    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+
+    $_classes: $_base-class +
+      '#{$_item-class}--#{$_ratio / 2}-of-#{$_ratio} ' +
+      '#{$_item-class}--#{$_ratio - $i}-of-#{$_ratio}--from-medium';
+
+    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+  }
+  @else {
+    $_classes: $_base-class +
+      '#{$_item-class}--#{$_ratio / 2}-of-#{$_ratio} ' +
+      '#{$_item-class}--#{$_ratio - $i}-of-#{$_ratio}--from-medium';
+
+    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+
+    $_classes: $_base-class +
+      '#{$_item-class}--#{$_ratio / 2}-of-#{$_ratio} ' +
+      '#{$_item-class}--#{$i}-of-#{$_ratio}--from-medium';
+
+    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+  }
+}
+
+$_html: $_html + '</section>';
+
+/* ---
+section: Grid
+title: Responsive
+order: 10
+---
+Resize your window to see how item stacking changes.
+
+```example:html
+<!-- In HTML -->
+#{unquote($_html)}
+```
+
+All JigSass Grid elements (grid cotainer, grid item and all their modifiers) are completly
+responsive using [JigSass MQ](https://www.github.com/txhawks/jigsass-tools-mq) and the
+breakpoints defined in [$jigsass-breakpoints](https://txhawks.github.io/jigsass-tools-mq/#variable-jigsass-breakpoints)`.
+
+Based on the arguments passed to the `jigsass-grid` and `jigsass-grid-item` mixins, responsive
+modifiers are generated according to the following logic:
+
+```scss
+.#{$_grid-class}--modifier-[-from-{breakpoint-name}][-until-{breakpoint-name}][-misc-{breakpoint-name}]
+.#{$_item-class}--modifier-[-from-{breakpoint-name}][-until-{breakpoint-name}][-misc-{breakpoint-name}]
+```
+
+So, assuming the `medium`, `large` and `landscape` breakpoints are defined in
+`$jigsass-breakpoints` as `600px`, `1024px` and `(orientation: landscape)` respectively,
+```scss
+@include jigsass-grid-item(1-of-#{$_ratio});
+```
+will generate the `.#{item-class}--1-of#{$_ratio}` class, which is the default, and is not
+limitted to any media-query.
+
+```scss
+@include jigsass-grid-item(1-of-#{$_ratio}, $until: medium);
+```
+will generate the `.#{item-class}--1-of#{$_ratio}--until-medium` class, which will go into effect
+at `(max-width: 37.49em)` and will override styles in the default class until that point.
+
+```scss
+@include jigsass-grid-item(1-of-#{$_ratio}, $from: large, $misc: landscape);
+```
+will generate the `.#{item-class}--1-of#{$_ratio}--from-large-when-landscape` class, which will
+go into effect at `(min-width: 64em) and (orientation: landscape)` and will override styles in
+the default class from that point on.
+
+Regardless of how many times a class is included, or where, it will only be generated once, where
+`jigsass-object-grid` was imported, leaving us with a css file as small as possible,
+and a predictable cascade.
+*/
+
+
+/* ---
+section: Grid
+title: Nested Grids
+order: 11
+---
+Grid elements can be endlessly nested inside eachother
+
+
+#### Usage example:
+```example:html
+<!-- In HTML -->
+<section class='#{$_grid-class} #{$_grid-class}--equal-height'>
+  <div class='#{$_item-class} #{$_item-class}--8-of-12'>
+    <div class='fpo'>
+      <div class='#{$_grid-class} #{$_grid-class}--equal-height'>
+        <div class='#{$_item-class} #{$_item-class}--6-of-12'>
+          <div class='fpo fpo--b'></div>
+        </div>
+        <div class='#{$_item-class} #{$_item-class}--6-of-12'>
+          <div class='fpo fpo--b'>
+            <div class='#{$_grid-class}'>
+              <div class='#{$_item-class} #{$_item-class}--6-of-12'>
+                <div class='fpo fpo--c'></div>
+              </div>
+              <div class='#{$_item-class} #{$_item-class}--6-of-12'>
+                <div class='fpo fpo--c'></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class='#{$_item-class} #{$_item-class}--4-of-12'>
+    <div class='fpo'></div>
+  </div>
+</section>
+```
+*/
+
+
+/* ---
+section: Grid
+title: Fixed-fluid
+order: 12
+---
+The grid system allows for a mixture of fixed and fluid units, but requires some
+customisation. For example, a fixed-width sidebar can be created by using item
+modifiers and two utility clases:
+
+```example:html
+<!-- In HTML -->
+<section class='#{$_grid-class} #{$_grid-class}--equal-height'>
+  <div class='#{$_item-class}'><div class='fpo'></div></div>
+
+  <div class='#{$_item-class}'><div class='fpo'></div></div>
+
+  <aside class='
+    #{$_item-class}
+    #{$_item-class}--fixed
+    #{$_item-class}--col
+    u-mw--200px u-fxb--200px
+  '>
+    <div class='fpo'>This sidebar is fixed at 200px width</div>
+
+    <div class='fpo'>
+      <div class='#{$_grid-class}'>
+        <div class='#{$_item-class} #{$_item-class}--6-of-12'>
+          <div class='fpo fpo--b'></div>
+        </div>
+        <div class='#{$_item-class} #{$_item-class}--6-of-12'>
+          <div class='fpo fpo--b'></div>
+        </div>
+      </div>
+    </div>
+
+    <div class='fpo'></div>
+  </aside>
+</section>
+```
+*/
+// stylelint-enable
+}
+
+
+
+
+

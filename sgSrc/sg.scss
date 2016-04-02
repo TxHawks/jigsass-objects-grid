@@ -1,0 +1,153 @@
+// *************************************
+//
+// # jigsass-object-grid style guide generator
+// -> It is a best practice for JigSass modules to
+//    not automatically generate css and documentation
+//    on `@import`. Please use this file to enable css
+//    (and comments) generation.
+//
+//    Files in `sgSrc/assets` will be available
+//    for use in the style guide
+//
+// *************************************
+
+@charset 'UTF-8';
+
+// --------------------
+// Dependencies
+// --------------------
+@import '../node_modules/jigsass-tools-maps/scss/index';
+@import '../node_modules/jigsass-tools-mq/scss/index';
+@import '../node_modules/jigsass-tools-typography/scss/index';
+@import '../node_modules/jigsass-tools-selectors/scss/index';
+@import '../node_modules/jigsass-tools-strings/scss/index';
+@import '../node_modules/jigsass-tools-bidi/scss/index';
+
+
+
+
+
+// --------------------
+// Imports
+// --------------------
+
+@import 'index.scss';
+
+
+
+
+
+// --------------------
+// Styles
+// --------------------
+// --- Grid Container --- //
+@include jigsass-grid;
+
+// Horizontal alignment modifiers
+@include jigsass-grid($modifier: start);
+@include jigsass-grid($modifier: center);
+@include jigsass-grid($modifier: end);
+@include jigsass-grid($modifier: rev);
+
+// Vertical alignment modifiers
+@include jigsass-grid($modifier: equal-height);
+@include jigsass-grid($modifier: top);
+@include jigsass-grid($modifier: middle);
+@include jigsass-grid($modifier: bottom);
+
+// Horizontal distribution modifiers
+@include jigsass-grid($modifier: space-between);
+@include jigsass-grid($modifier: space-around);
+
+// Gutter width modifiers
+@each $gutter-mod, $gutter-w in $jigsass-grid-gutter-modifiers {
+  @include jigsass-grid($modifier: $gutter-mod);
+}
+
+
+// --- Grid Item --- //
+@include jigsass-grid-item;
+@include jigsass-grid-item($from: large);
+
+// Modifiers
+@include jigsass-grid-item($modifier: col);
+@include jigsass-grid-item($modifier: fixed);
+@include jigsass-grid-item($modifier: center);
+
+// Item-level gutter-width modifiers
+@each $gutter-mod, $gutter-w in $jigsass-grid-gutter-modifiers {
+  @include jigsass-grid-item($modifier: $gutter-mod);
+}
+
+// Item-width modifiers
+@each $ratio in $jigsass-grid-cols {
+  @for $i from 1 through $ratio {
+    @include jigsass-grid-item($modifier: #{$i}-of-#{$ratio});
+    @include jigsass-grid-item($modifier: #{$i}-of-#{$ratio}, $from: medium);
+  }
+}
+
+// Item offset modifiers
+@each $ratio in $jigsass-grid-cols {
+  @for $i from 1 through $ratio {
+    @include jigsass-grid-item($modifier: offset-#{$i}-of-#{$ratio});
+  }
+}
+
+// Gutter rules modifiers
+@include jigsass-grid-item($modifier: gutter-rule-1);
+
+
+// --------------------
+// Demo Styles
+// --------------------
+
+$jigsass-mdcss-brand-color: #09a5d9;
+@include jigsass-set-baseline;
+html { font-family: sans-serif; }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.fpo {
+  background-color: $jigsass-mdcss-brand-color;
+  border: 1px solid lighten($jigsass-mdcss-brand-color, 5%);
+  box-sizing: border-box;
+  color: #fff;
+  margin-bottom: 4rem;
+  padding: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.fpo--b,
+.fpo--c {
+  margin-bottom: 0;
+}
+.fpo--b {
+  background-color: darken($jigsass-mdcss-brand-color, 5%);
+
+}
+
+.fpo--c {
+  background-color: darken($jigsass-mdcss-brand-color, 10%);
+}
+
+.fpo--tall {
+  min-height: 25rem;
+}
+.fpo--fixed {
+  float: left;
+  width: 200px;
+}
+
+
+// --- Utility classes --- //
+.u-fxb--200px {
+  flex-basis: 200px;
+}
+.u-mw--200px {
+  max-width: 200px;
+}

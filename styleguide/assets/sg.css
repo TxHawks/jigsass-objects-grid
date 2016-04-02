@@ -1,0 +1,2730 @@
+/* ---
+section: Grid
+title: Configuration
+order: 1
+---
+JigSass Grid can be tweaked using the following built-in configuration variables.
+To override the default values, set your own _before_ importing JigSass Grid.
+
+
+#### Grid container class name
+```scss
+$jigsass-grid-class
+```
+**Type:** `String`
+
+The class-name (sans the leading `.`) used for grid containers.
+
+**Default:** `o-string`
+
+
+#### Grid item class name
+```scss
+$jigsass-grid-item-class
+```
+**Type:** `String`
+
+The class-name (sans the leading `.`) used for grid items
+
+**Default:** $jigsass-grid-class + `__item`
+
+
+#### Flexbox
+```scss
+$jigsass-grid-flexbox
+```
+**Type:** `Boolean`
+
+Determines if the grid system be based on flexbox.
+
+**Default:** `true`
+
+
+#### Flexbox fallback
+```scss
+$jigsass-grid-flexbox-fallback
+```
+**Type:** `Boolean` or `String`<br />
+Determines if to include a flexbox fallback and the qualifier class
+to use if so (e.g, `.no-flexwrap` when using Modernizr defaults)
+
+Set to `false` to disable fallback altogether, and to a class-name
+(sans the leading `.`) used as the qualifier class if fallback is
+desirable.
+
+**Default:** `no-flexwrap`
+
+
+#### Default gutter width
+```scss
+$jigsass-grid-default-gutter
+```
+
+**Type:** `Number`
+
+A unitless number. The default number of base rhythm units
+(as defined in [$jigsass-sizes.rhythm-unit](https://txhawks.github.io/jigsass-tools-typography/#variable-_jigsass-default-sizes)) to use as the default gutter between grid items.
+
+**Default:** `4`
+
+
+#### Gutter width Modifiers
+```scss
+$jigsass-grid-gutter-modifiers
+```
+
+**Type:** `Map`
+
+Specifies gutter-width modifiers that will be available.
+
+A map where each key is a modifier's name and its value is a
+unitless number, denoting the number of rhythm units to serve
+as gutter-width for each modifier.
+
+**Default:** `(gutter-0: 0, gutter-1: 1, gutter-2: 2, gutter-8: 8)`
+
+
+#### Grid columns
+```scss
+$jigsass-grid-cols
+```
+
+**Type:** `List`
+
+A list of unitless numbers, specifying a number of columns a grid item can be split into.
+Setting `$jigsass-grid-cols` to `7 12`would mean that grid items could be `x-of-7` or
+`x-of-12` in width.
+
+**Default:** `12`
+
+
+#### Gutter rules
+
+Specifies names and styles of gutter rule modifiers
+
+A map where each key is a modifier's name, and its value is
+the border style to apply to that modifier's column rule.
+
+**Type:** `Map`
+
+**Default:** `(gutter-rule-1: 1px solid #ccc)`
+*/
+/* ---
+section: Grid
+title: Introduction
+order: -10
+---
+
+[![NPM version][npm-image]][npm-url]  [![Dependency Status][daviddm-image]][daviddm-url]
+
+JigSass Grid is a responsive Sass (SCSS) flexbox-based grid
+system, with a `display: inline-block` fallback backed in, where possible.
+
+It is intended to be both flexible (pun intended) and easy to use. As part of the
+JigSass ecosystem, JigSass Grid integrates with its other modules, relying on some of them
+for consistent [resposive breakpoints](https://github.com/txhawks/jigsass-tools-mq/),
+[sizing](https://github.com/txhawks/jigsass-tools-typography/) and more.
+
+#### Installation
+
+Using npm:
+
+```sh
+npm i -S jigsass-object-grid
+```
+
+
+#### Features
+  - [Responsive](#responsive).
+  - [Infinitly nestable](#nested-grids).
+  - [Fixed fluid](#fixed-fluid) layouts.
+  - Column wrapping.
+  - [Equal height columns](#o-grid--equal-height).
+  - Automatic distribution of widths.
+  - Custom horizontal alignments of items <br />
+    ([start](#o-grid-start),
+    [center](#o-grid-center),
+    [end](#o-grid-end),
+    [reversed](#o-grid-rev),
+    [space-between](#o-grid-space-between),
+    [space-around](#o-grid-space-around)).
+  - Custom vertical alignments of items ([top](#o-grid-top),
+    [middle](#o-grid-middle),
+    [bottom](#o-grid-bottom)).
+  - Fluid by default.
+  - Configureable grid-wide gutters widths.
+  - Overrideable gutter widths on a per-item basis.
+  - Built in gutter rules support.
+  - Offsets.
+
+
+#### Availeable classes
+All classes and each modifier (including responsive modifiers) must be explicitly `@include`d
+to be available in CSS (see [usage](#usage) below).
+
+
+** Grid containers:**<br />
+`.o-grid`
+  - `--start`, `--center`, `--end`, `--rev`, `--space-between`, `--space-around`
+  - `--top`, `--middle`, `--bottom`, `--equal-height`
+  - `--gutter-X` (gutter width, See [here](#gutter-width-modifiers)).
+
+
+** Grid items:**<br />
+`.o-grid__item`
+  - `--col`, `--center, `
+  - `--top`, `--middle`, `--bottom`, `--equal-height`
+  - `--gutter-X` (gutter width, See [here](#gutter-width-modifiers)).
+  - `--gutter-gutter-rule-X` (See [here](#gutter-rules)).
+  - `--X-of-Y`
+  - `--offset-X-of-Y`
+
+
+#### Usage
+
+First, you would need to import JigSass Grid:
+
+```scss
+@import 'path/to/jigsass-object-grid/scss/index'
+```
+
+And optionally [reconfigure](#configuration) the defaults to you liking.
+
+To create a grid context, simply attach the o-grid class to an element, Any element,
+which will serve as a grid container. You can now add grid items to it (with a class of
+o-grid__item). Grid containers' only legitimate children are grid items, and those, in turen,
+may only reside within a grid container.
+
+Like all other JigSass modules, JigSass Grid does not automatically generate any CSS on import.
+In order to use its classes, you would have to first explicitly indicate your intention to use
+them, using the [jigsass-grid](#jigsass-grid) or [jigsass-grid-item](#jigsass-grid-item) mixins.
+This way our css remains small and maintainable:
+
+```scss
+@include jigsass-grid([$modifier, $from-brekpoint, $until-breakpoint, $misc-breakpoint]);
+@include jigsass-grid-item([$modifier, $from-brekpoint, $until-breakpoint, $misc-breakpoint]);
+```
+
+Regardless of how many times a class is included, or where, it will only be generated once, where
+`jigsass-object-grid` was imported to our main sass file, leaving us with a css file as small as
+possible, and a predictable cascade for more example, see [here](#responsive).
+
+
+
+[npm-image]: https://badge.fury.io/js/jigsass-object-grid.svg
+[npm-url]: https://npmjs.org/package/jigsass-object-grid
+
+[daviddm-image]: https://david-dm.org/TxHawks/jigsass-object-grid.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/TxHawks/jigsass-object-grid
+*/
+/* ---
+section: Grid
+title: Responsive
+order: 10
+---
+Resize your window to see how item stacking changes.
+
+```example:html
+<!-- In HTML -->
+<section class="o-grid"><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--11-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--1-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--2-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--10-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--9-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--3-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--4-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--8-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--7-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--5-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--6-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--6-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--5-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--7-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--8-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--4-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--3-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--9-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--10-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--2-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--1-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--11-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 "><div class="fpo"></div></div></section>
+```
+
+All JigSass Grid elements (grid cotainer, grid item and all their modifiers) are completly
+responsive using [JigSass MQ](https://www.github.com/txhawks/jigsass-tools-mq) and the
+breakpoints defined in [$jigsass-breakpoints](https://txhawks.github.io/jigsass-tools-mq/#variable-jigsass-breakpoints)`.
+
+Based on the arguments passed to the `jigsass-grid` and `jigsass-grid-item` mixins, responsive
+modifiers are generated according to the following logic:
+
+```scss
+.o-grid--modifier-[-from-{breakpoint-name}][-until-{breakpoint-name}][-misc-{breakpoint-name}]
+.o-grid__item--modifier-[-from-{breakpoint-name}][-until-{breakpoint-name}][-misc-{breakpoint-name}]
+```
+
+So, assuming the `medium`, `large` and `landscape` breakpoints are defined in
+`$jigsass-breakpoints` as `600px`, `1024px` and `(orientation: landscape)` respectively,
+```scss
+@include jigsass-grid-item(1-of-12);
+```
+will generate the `.item-class--1-of12` class, which is the default, and is not
+limitted to any media-query.
+
+```scss
+@include jigsass-grid-item(1-of-12, $until: medium);
+```
+will generate the `.item-class--1-of12--until-medium` class, which will go into effect
+at `(max-width: 37.49em)` and will override styles in the default class until that point.
+
+```scss
+@include jigsass-grid-item(1-of-12, $from: large, $misc: landscape);
+```
+will generate the `.item-class--1-of12--from-large-when-landscape` class, which will
+go into effect at `(min-width: 64em) and (orientation: landscape)` and will override styles in
+the default class from that point on.
+
+Regardless of how many times a class is included, or where, it will only be generated once, where
+`jigsass-object-grid` was imported, leaving us with a css file as small as possible,
+and a predictable cascade.
+*/
+/* ---
+section: Grid
+title: Nested Grids
+order: 11
+---
+Grid elements can be endlessly nested inside eachother
+
+
+#### Usage example:
+```example:html
+<!-- In HTML -->
+<section class='o-grid o-grid--equal-height'>
+  <div class='o-grid__item o-grid__item--8-of-12'>
+    <div class='fpo'>
+      <div class='o-grid o-grid--equal-height'>
+        <div class='o-grid__item o-grid__item--6-of-12'>
+          <div class='fpo fpo--b'></div>
+        </div>
+        <div class='o-grid__item o-grid__item--6-of-12'>
+          <div class='fpo fpo--b'>
+            <div class='o-grid'>
+              <div class='o-grid__item o-grid__item--6-of-12'>
+                <div class='fpo fpo--c'></div>
+              </div>
+              <div class='o-grid__item o-grid__item--6-of-12'>
+                <div class='fpo fpo--c'></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class='o-grid__item o-grid__item--4-of-12'>
+    <div class='fpo'></div>
+  </div>
+</section>
+```
+*/
+/* ---
+section: Grid
+title: Fixed-fluid
+order: 12
+---
+The grid system allows for a mixture of fixed and fluid units, but requires some
+customisation. For example, a fixed-width sidebar can be created by using item
+modifiers and two utility clases:
+
+```example:html
+<!-- In HTML -->
+<section class='o-grid o-grid--equal-height'>
+  <div class='o-grid__item'><div class='fpo'></div></div>
+
+  <div class='o-grid__item'><div class='fpo'></div></div>
+
+  <aside class='
+    o-grid__item
+    o-grid__item--fixed
+    o-grid__item--col
+    u-mw--200px u-fxb--200px
+  '>
+    <div class='fpo'>This sidebar is fixed at 200px width</div>
+
+    <div class='fpo'>
+      <div class='o-grid'>
+        <div class='o-grid__item o-grid__item--6-of-12'>
+          <div class='fpo fpo--b'></div>
+        </div>
+        <div class='o-grid__item o-grid__item--6-of-12'>
+          <div class='fpo fpo--b'></div>
+        </div>
+      </div>
+    </div>
+
+    <div class='fpo'></div>
+  </aside>
+</section>
+```
+*/
+/* ---
+section: Grid
+title: Grid container mixin
+order: 2
+---
+```scss
+@mixin jigsass-grid($modifier: false, $from: false, $until: false, $misc: false) { ... }
+```
+
+#### Description
+Generate a grid-container class or modifier, which can be responsive (i.e., limited to
+certain breakpoint defined in [$jigsass-breakpoints](https://txhawks.github.io/jigsass-tools-mq/#variable-jigsass-breakpoints)).
+
+#### Parameters
+Name | Description | Type | Default Value
+--- | --- | --- | ---
+`$modifier` | A grid-container modifier, e.g., `equal-height` | `String` or `Boolean` | false
+`$from` | The name of breakpoint used as the min-width condition | `String` or `Boolean` | false
+`$until` | The name of breakpoint used as the max-width condition | `String` or `Boolean` | false
+`$misc` | The name of a miscellaneous media query condition | `String` or `Boolean` | false
+
+#### Example
+```scss
+@include jigsass-grid($modifier: center, $from: small, $until: large, $misc: landscape) { ... }
+```
+Will Generate:
+```css
+@media (min-width: 30em) and (max-width: 63.99em) and (orientation: landscape) {
+ .o-grid--center--from-small-until-large-when-landscape { ... }
+}
+```
+*/
+.o-grid {
+  margin-left: -4rem;
+  list-style: none;
+  margin-left: -2rem;
+  margin-right: -2rem;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 1 auto;
+      -ms-flex: 0 1 auto;
+          flex: 0 1 auto;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+  /* ---
+  section: Grid Container
+  title: o-grid
+  order: 0
+  ---
+  Any HTML element (including lists) may serve as a grid container,
+  however, grid containers may contain no other elements other than
+  grid items.
+
+  A grid element has negative margins the length of half a gutter at its left and right,
+  to compensate of the first and last column's gutter and ease calculations.
+
+  Unless `o-grid__item`s are given a width modifier class,
+  all grid items will be equally distributed along a single row.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid([$modifier, $from, $until, $misc]);
+  ```
+
+
+  #### Related variables:
+
+  - `$jigsass-grid-class` (default: `grid`): Determines the class-name used
+    for grid containers.
+  - `$jigsass-grid-flexbox` (default: `true`): Determines whether to use flexbox or not.
+  - `$jigsass-grid-flexbox-fallback` (default: `no-flaxwrap`): Determines if to include a
+    flexbox fallback and the qualifier class to use if so (e.g, `.no-flexwrap`
+    when using Modernizr defaults). Set to `false` to disable fallback altogether,
+    and to a class-name (sans the leading `.`) used as the qualifier class if fallback
+    is desirable.
+  - `$jigsass-grid-default-gutter` (default: `4`): A unitless number used to determine number of
+    base rhythm units (as defined in `$jigsass-sizes.rhythm-unit`) to use as gutter length
+    between grid items in the default grid container.
+
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid'>
+    <!-- first row -->
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'> 1 of 3 </div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'> 1 of 3 </div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'> 1 of 3 </div>
+    </div>
+    <!-- second row -->
+    <div class='o-grid__item'>
+      <div class='fpo'>auto-sized</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>auto-sized</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid();
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid {
+    display: flexbox;
+    flex: 0 1 auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    list-style: none;
+    margin-left: -2rem;
+    margin-right: -2rem;
+  }
+
+  // Targets direct descendants using the universal selector
+  // instead of actual grid items in order to keep
+  // specificity low. This works, as only grid items are
+  // legitimate children of grid containers.
+  .o-grid > * {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  // When `$jigsass-grid-flexbox-fallback` is set to `no-flexwrap`
+  .no-flexwrap .o-grid {
+    display: block;
+    letter-spacing: -.043em;
+    text-align: (left|right);
+  }
+
+  // When `$jigsass-grid-flexbox` is disabled
+  .o-grid {
+    display: block;
+    letter-spacing: -.043em;
+    list-style: none;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    text-align: (left|right);
+  }
+  .o-grid > * {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  ```
+  */
+}
+
+.o-grid > * {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  vertical-align: top;
+}
+
+.no-flexwrap .o-grid {
+  text-align: left;
+  display: block;
+  letter-spacing: -0.31em;
+  text-rendering: optimizespeed;
+}
+
+opera:-o-prefocus .no-flexwrap .o-grid, .no-flexwrap .o-grid {
+  word-spacing: -.043em;
+}
+
+.o-grid--start {
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  /* ---
+  section: Grid Container
+  title: o-grid--start
+  order: 1
+  ---
+  Aligns grid items to horizontal start of the grid container.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: start[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--start'>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>1 of 4</div>
+    </div>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>1 of 4</div>
+    </div>
+    <div class='o-grid__item o-grid__item--8-of-12'>
+      <div class='fpo'>2 of 3</div>
+    </div>
+    <div class='o-grid__item o-grid__item--10-of-12'>
+      <div class='fpo'>5 of 6</div>
+    </div>
+    <div class='o-grid__item o-grid__item--12-of-12'>
+      <div class='fpo'>1 of 1</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(start);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid--start {
+    justify-content: flex-start;
+  }
+
+  // When `$jigsass-grid-flexbox-fallback` is set to `no-flexwrap`
+  .no-flexwrap .o-grid--start {
+    text-align: (left|right);
+}
+
+  // When `$jigsass-grid-flexbox` is disabled
+  .o-grid--start {
+    text-align: (left|right);
+  }
+
+  ```
+  */
+}
+
+.no-flexwrap .o-grid--start {
+  text-align: left;
+}
+
+.o-grid--center {
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  /* ---
+  section: Grid Container
+  title: o-grid--center
+  order: 2
+  ---
+  Aligns grid items to horizontal center of the grid container.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: center[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--center'>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>1 of 4</div>
+    </div>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>1 of 4</div>
+    </div>
+    <div class='o-grid__item o-grid__item--8-of-12'>
+      <div class='fpo'>2 of 3</div>
+    </div>
+    <div class='o-grid__item o-grid__item--10-of-12'>
+      <div class='fpo'>5 of 6</div>
+    </div>
+    <div class='o-grid__item o-grid__item--12-of-12'>
+      <div class='fpo'>1 of 1</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(center);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid--center {
+    justify-content: center;
+  }
+
+  // When `$jigsass-grid-flexbox-fallback` is set to `no-flexwrap`
+  .no-flexwrap .o-grid--center {
+    text-align: center;
+  }
+
+  // When `$jigsass-grid-flexbox` is disabled
+  .o-grid--center {
+    text-align: center;
+  }
+  ```
+  */
+}
+
+.no-flexwrap .o-grid--center {
+  text-align: center;
+}
+
+.o-grid--end {
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  /* ---
+  section: Grid Container
+  title: o-grid--end
+  order: 3
+  ---
+  Aligns grid items to horizontal end of the grid container.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: end[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--end'>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>1 of 4</div>
+    </div>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>1 of 4</div>
+    </div>
+    <div class='o-grid__item o-grid__item--8-of-12'>
+      <div class='fpo'>2 of 3</div>
+    </div>
+    <div class='o-grid__item o-grid__item--10-of-12'>
+      <div class='fpo'>5 of 6</div>
+    </div>
+    <div class='o-grid__item o-grid__item--12-of-12'>
+      <div class='fpo'>1 of 1</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(end);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid--end {
+    justify-content: flex-end;
+  }
+
+  // When `$jigsass-grid-flexbox-fallback` is set to `no-flexwrap`
+  .no-flexwrap .o-grid--end {
+    text-align: (left|right);
+  }
+  // When `$jigsass-grid-flexbox` is disabled
+  .o-grid--end {
+    text-align: (left|right);
+  }
+  ```
+  */
+}
+
+.no-flexwrap .o-grid--end {
+  text-align: right;
+}
+
+.o-grid--rev {
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: reverse;
+  -webkit-flex-direction: row-reverse;
+      -ms-flex-direction: row-reverse;
+          flex-direction: row-reverse;
+  /* ---
+  section: Grid Container
+  title: o-grid--rev
+  order: 4
+  ---
+  Reversed grid.
+
+  items 1, 2, 3, 4 in the markup will be visually displayed in 4, 3, 2, 1 order.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: rev[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--rev'>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 1</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 2</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 3</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 4</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(rev);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid--rev {
+    flex-direction: row-reverse;
+  }
+
+  // When `$jigsass-grid-flexbox-fallback` is set to `no-flexwrap`
+  .no-flexwrap .o-grid--start {
+    direction: (rtl|ltr);
+  }
+
+  .no-flexwrap .o-grid--rev > .o-grid__item {
+    direction: (rtl|ltr); // Opposite of the above
+  }
+
+  // When `$jigsass-grid-flexbox` is disabled
+  .o-grid--start {
+    direction: (rtl|ltr);
+  }
+
+  .o-grid--rev > .o-grid__item {
+    direction: (rtl|ltr); // Opposite of the above
+  }
+
+  ```
+  */
+}
+
+.no-flexwrap .o-grid--rev {
+  direction: rtl;
+}
+
+.no-flexwrap .o-grid--rev > .o-grid__item {
+  direction: ltr;
+}
+
+.o-grid--equal-height {
+  /* ---
+  section: Grid Container
+  title: o-grid--equal-height
+  order: 5
+  ---
+  Stretch all grid items on a single row to the height of the tallest grid item.
+
+  Only works with flexbox, no fallback available.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: equal-height[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--equal-height'>
+    <!-- first row -->
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'>
+        1 of 3<br />
+        Stretches to fill height by default, despite its content not filling the space
+      </div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'>
+        1 of 3<br />
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mollis
+        velit non gravida venenatis. Praesent consequat lectus purus, ut scelerisque
+        velit condimentum eu.
+      </div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'>
+        1 of 3<br />
+        Stretches to fill height by default, despite its content not filling the space
+      </div>
+    </div>
+    <!-- second row -->
+    <div class='o-grid__item'>
+      <div class='fpo'>auto-sized</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>auto-sized</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(equal-height);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid--equal-height > o-grid__item {
+    display: flex;
+  }
+
+  ```
+  */
+}
+
+.o-grid--equal-height > .o-grid__item {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.o-grid--top {
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+              -ms-grid-row-align: flex-start;
+          align-items: flex-start;
+  /* ---
+  section: Grid Container
+  title: o-grid--top
+  order: 6
+  ---
+  Top aligned grid items
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: top[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--top'>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 1</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 2</div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo fpo--tall'>Item 3</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 4</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 5</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(top);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid--top {
+    align-items: flex-start;
+  }
+
+  .o-grid--top > * {
+    vertical-align: top;
+  }
+  ```
+  */
+}
+
+.o-grid--top > .o-grid__item {
+  verticle-align: top;
+}
+
+.o-grid--middle {
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+              -ms-grid-row-align: center;
+          align-items: center;
+  /* ---
+  section: Grid Container
+  title: o-grid--middle
+  order: 7
+  ---
+  Middle aligned grid items
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: middle[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--middle'>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 1</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 2</div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo fpo--tall'>Item 3</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 4</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 5</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(middle);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid--middle {
+    align-items: center;
+  }
+
+  .o-grid--middle >  * {
+    vertical-align: middle;
+  }
+
+  ```
+  */
+}
+
+.o-grid--middle > * {
+  verticle-align: middle;
+}
+
+.o-grid--bottom {
+  -webkit-box-align: end;
+  -webkit-align-items: flex-end;
+      -ms-flex-align: end;
+              -ms-grid-row-align: flex-end;
+          align-items: flex-end;
+  /* ---
+  section: Grid Container
+  title: o-grid--bottom
+  order: 8
+  ---
+  Bottom aligned grid items
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: bottom[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--bottom'>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 1</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 2</div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo fpo--tall'>Item 3</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 4</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>Item 5</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(bottom);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid--bottom {
+    align-items: flex-end;
+  }
+
+  .o-grid--bottom > * {
+    vertical-align: bottom;
+  }
+
+  ```
+  */
+}
+
+.o-grid--bottom > * {
+  verticle-align: bottom;
+}
+
+.o-grid--space-between {
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  /* ---
+  section: Grid Container
+  title: o-grid--space-between
+  order: 9
+  ---
+  Distribute grid items equally across the main flex axis.
+
+  ** Use with care. Only available with flexbox. No fallback. **
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: space-between[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--space-between'>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>Item 1</div>
+    </div>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>Item 2</div>
+    </div>
+    <div class='o-grid__item o-grid__item--3-of-12'>
+      <div class='fpo'>Item 3</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(space-between);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid--space-between {
+    justify-content: space-between
+  }
+  ```
+  */
+}
+
+.o-grid--space-around {
+  -webkit-justify-content: space-around;
+      -ms-flex-pack: distribute;
+          justify-content: space-around;
+  /* ---
+  section: Grid Container
+  title: o-grid--space-around
+  order: 10
+  ---
+  Equally distribute space around grid items across the main flex axis, meaning,
+  including before the first item and after the last.
+
+  ** Use with care. Only available with flexbox. No fallback. **
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: space-around[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--space-around'>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'>Item 1</div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'>Item 2</div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(space-around);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid--space-around {
+    justify-content: space-around
+  }
+  ```
+  */
+}
+
+.o-grid--gutter-0 {
+  margin-left: 0rem;
+  margin-right: 0rem;
+  /* ---
+  section: Grid Container
+  title: o-grid--gutter-0
+  order: 11
+  ---
+  Modify the width of column gutters to that of 0 base rhythm units
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: gutter-0[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
+    A map of modifiers, where each key is a modifier's name and value is a unitless numbers
+    denoting amounts of rhythm units to serve as gutter-width in each modifier.
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--gutter-0'>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 1</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 2</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 3</div>
+  </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(gutter-0);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid--gutter-0 {
+    margin-left: 0rem;
+    margin-right: 0rem;
+  }
+
+  // Targets direct descendants using the universal selector
+  // instead of o-grid__item in order to keep
+  // specificity low. This works, as only grid items are
+  // legitimate children of o-grid.
+  .o-grid--gutter-0 > * {
+    padding-left: 0rem;
+    padding-right: 0rem;
+  }
+  ```
+  */
+}
+
+.o-grid--gutter-0 > * {
+  padding-left: 0rem;
+  padding-right: 0rem;
+}
+
+.o-grid--gutter-1 {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  /* ---
+  section: Grid Container
+  title: o-grid--gutter-1
+  order: 11
+  ---
+  Modify the width of column gutters to that of 1 base rhythm units
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: gutter-1[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
+    A map of modifiers, where each key is a modifier's name and value is a unitless numbers
+    denoting amounts of rhythm units to serve as gutter-width in each modifier.
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--gutter-1'>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 1</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 2</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 3</div>
+  </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(gutter-1);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid--gutter-1 {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+
+  // Targets direct descendants using the universal selector
+  // instead of o-grid__item in order to keep
+  // specificity low. This works, as only grid items are
+  // legitimate children of o-grid.
+  .o-grid--gutter-1 > * {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  ```
+  */
+}
+
+.o-grid--gutter-1 > * {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.o-grid--gutter-2 {
+  margin-left: -1rem;
+  margin-right: -1rem;
+  /* ---
+  section: Grid Container
+  title: o-grid--gutter-2
+  order: 11
+  ---
+  Modify the width of column gutters to that of 2 base rhythm units
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: gutter-2[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
+    A map of modifiers, where each key is a modifier's name and value is a unitless numbers
+    denoting amounts of rhythm units to serve as gutter-width in each modifier.
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--gutter-2'>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 1</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 2</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 3</div>
+  </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(gutter-2);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid--gutter-2 {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+
+  // Targets direct descendants using the universal selector
+  // instead of o-grid__item in order to keep
+  // specificity low. This works, as only grid items are
+  // legitimate children of o-grid.
+  .o-grid--gutter-2 > * {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  ```
+  */
+}
+
+.o-grid--gutter-2 > * {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.o-grid--gutter-8 {
+  margin-left: -4rem;
+  margin-right: -4rem;
+  /* ---
+  section: Grid Container
+  title: o-grid--gutter-8
+  order: 11
+  ---
+  Modify the width of column gutters to that of 8 base rhythm units
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid($modifier: gutter-8[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
+    A map of modifiers, where each key is a modifier's name and value is a unitless numbers
+    denoting amounts of rhythm units to serve as gutter-width in each modifier.
+
+
+  #### Related Mixins:
+  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
+  which can be responsive (i.e., limited to a certain media-query)
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--gutter-8'>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 1</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 2</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 3</div>
+  </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid(gutter-8);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid--gutter-8 {
+    margin-left: -4rem;
+    margin-right: -4rem;
+  }
+
+  // Targets direct descendants using the universal selector
+  // instead of o-grid__item in order to keep
+  // specificity low. This works, as only grid items are
+  // legitimate children of o-grid.
+  .o-grid--gutter-8 > * {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+  ```
+  */
+}
+
+.o-grid--gutter-8 > * {
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+/* ---
+section: Grid
+title: Grid item mixin
+order: 3
+---
+```scss
+@mixin jigsass-grid-item($modifier: false, $from: false, $until: false, $misc: false) { ... }
+```
+
+#### Description
+Generate a grid-item class or modifier, which can be responsive (i.e., limited to
+certain breakpoint defined in [$jigsass-breakpoints](https://txhawks.github.io/jigsass-tools-mq/#variable-jigsass-breakpoints)).
+
+#### Parameters
+Name | Description | Type | Default Value
+--- | --- | --- | ---
+`$modifier` | A grid-item modifier, e.g., `center` | `String` or `Boolean` | false
+`$from` | The name of breakpoint used as the min-width condition | `String` or `Boolean` | false
+`$until` | The name of breakpoint used as the max-width condition | `String` or `Boolean` | false
+`$misc` | The name of a miscellaneous media query condition | `String` or `Boolean` | false
+
+#### Example
+```scss
+@include jigsass-grid-item($modifier: center, $from: small, $until: large, $misc: landscape) { ... }
+```
+Will Generate:
+```css
+@media (min-width: 30em) and (max-width: 63.99em) and (orientation: landscape) {
+ .o-grid__item--center--from-small-until-large-when-landscape { ... }
+}
+```
+*/
+.o-grid__item {
+  box-sizing: border-box;
+  list-style: none;
+  -webkit-flex-basis: auto;
+      -ms-flex-preferred-size: auto;
+          flex-basis: auto;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  -webkit-flex-shrink: 1;
+      -ms-flex-negative: 1;
+          flex-shrink: 1;
+  /* ---
+  section: Grid Item
+  title: o-grid__item
+  order: 1
+  ---
+  Any HTML element (including lists) may serve as a grid item, however, grid items
+  must only be placed as the *direct* descendants of a grid container.
+
+  Each grid item has padding the length of half a single gutter at its left and right edges,
+  creating a gap between the different items. The gutter's width can de modified at the
+  grid level, or overriden on a per-grid item basis.
+
+  Grid items are set to `box-sizing: border-box`, so that the padding used to form gutters
+  is taken into consideration when setting item widths.
+
+  Unless grid items are given a width modifier class, and as long as flexbox is available,
+  all grid items will be equally distributed along a single row.
+
+
+  #### Flexbox fallback caveat:
+  When flexbox isn't available, JigSass Grid can be set to fall back to using a
+  `display: inline-block` based grid system. Using a `display: inline-block` based
+  gird system has many advantages over traditional, `float` based grid systems,
+  but also one notable drawback: whitespace between grid items, which are inline elements,
+  is rendered, and can break your grid.
+  JigSass Grid tries to take care of that for you by setting the gird container's
+  `letter-spacing` to `-0.31em`, which eliminates white-space between grid cells
+  with all non-monospaced fonts. When using a monospace font-face as your base font,
+  set the grid container's font-family to `sans-serif` and re-apply your default
+  font to grid items.
+
+  The safest option is to comment out the whitespace between grid items:
+
+  ```html
+  <section class='o-grid'>
+    <div class='o-grid__item'>
+      ...
+    </div><!--
+    --><div class='o-grid__item'>
+      ...
+    </div>
+  </section>
+  ```
+
+
+  #### Related variables:
+  - `$jigsass-grid-item-class` (default: `o-grid__item`): Determines the
+    class-name used for grid containers.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item([$modifier, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid'>
+    <!-- First row -->
+    <div class='o-grid__item'>
+      <div class='fpo'>auto-sized</div>
+    </div>
+    <div class='o-grid__item'>
+      <div class='fpo'>auto-sized</div>
+    </div>
+    <!-- Second row -->
+    <div class='o-grid__item o-grid__item--12-of-12'>
+      <div class='fpo'> 1 of 1 </div>
+    </div>
+    <!-- Third row -->
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'> 1 of 3 </div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'> 1 of 3 </div>
+    </div>
+    <div class='o-grid__item o-grid__item--4-of-12'>
+      <div class='fpo'> 1 of 3 </div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item();
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid__item {
+    box-sizing: border-box;
+    list-style: none;
+    flex-basis: auto;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  // When `$jigsass-grid-flexbox-fallback` is set to `no-flexwrap`
+  .no-flexwrap .o-grid {
+    display: inline-block;
+    letter-spacing: normal;
+    text-align: (left|right);
+    text-rendering: auto;
+    word-spacing: normal;
+  }
+
+  // When `$jigsass-grid-flexbox` is disabled
+  .o-grid {
+    box-sizing: border-box;
+    display: inline-block;
+    letter-spacing: normal;
+    list-style: none;
+    text-align: (left|right);
+    text-rendering: auto;
+    word-spacing: normal;
+  }
+
+  ```
+  */
+}
+
+.no-flexwrap .o-grid__item {
+  text-align: left;
+  display: inline-block;
+  letter-spacing: normal;
+  text-rendering: auto;
+  word-spacing: normal;
+}
+
+.o-grid__item--col {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  /* ---
+  section: Grid Item
+  title: o-grid__item--col
+  order: 2
+  ---
+  Sets a grid item's main flex axis to vertical. Often useful when used in conjuction with the
+  `--equal-height` grid container modifier.
+
+  Only available when flexbox is supported.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item(col[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--equal-height'>
+    <!-- first row -->
+    <div class='o-grid__item
+                o-grid__item--col
+                o-grid__item--6-of-12'
+    >
+      <div class='fpo'></div>
+      <div class='fpo'>These boxes are in a column</div>
+      <div class='fpo'></div>
+    </div>
+    <div class='o-grid__item o-grid__item--6-of-12'>
+      <div class='fpo'></div>
+      <div class='fpo'></div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(col);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid__item--col {
+    flex-direction: row;
+  }
+
+  ```
+  */
+}
+
+.o-grid__item--col {
+  -webkit-box-flex: 0;
+  -webkit-flex-grow: 0;
+      -ms-flex-positive: 0;
+          flex-grow: 0;
+  -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+          flex-shrink: 0;
+}
+
+.o-grid__item--center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  /* ---
+  section: Grid Item
+  title: o-grid__item--center
+  order: 4
+  ---
+  Horizontaly centers a single grid inside it's grid container.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item(center[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid'>
+    <div class='o-grid__item o-grid__item--7-of-12'>
+      <div class='fpo'></div>
+    </div>
+    <div class='
+      o-grid__item
+      o-grid__item--center
+      o-grid__item--7-of-12
+    '>
+      <div class='fpo'>Centered</div>
+    </div>
+    <div class='o-grid__item o-grid__item--7-of-12'>
+      <div class='fpo'></div>
+    </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(center);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid__item--center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  ```
+  */
+}
+
+.o-grid__item--gutter-0 {
+  padding-right: 0rem;
+  /* ---
+  section: Grid Item
+  title: o-grid__item--gutter-0
+  order: 5
+  ---
+  Modify the width of a gutter between an individual grid item
+  and the next one to that of 0 base rhythm units.
+
+  ** Do not set item-level gutter modifiers on items in the last column of a grid. **
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item($modifier: gutter-0[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
+    A map of modifiers, where each key is a modifier's name and value is a unitless numbers
+    denoting amounts of rhythm units to serve as gutter-width in each modifier.
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid'>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 1</div>
+  </div>
+  <div class='o-grid__item o-grid__item--gutter-0'>
+  <div class='fpo'>Item 2</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 3</div>
+  </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(gutter-0);
+  ```
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid__item--gutter-0 {
+    padding-left: 0rem;
+    padding-right: 0rem;
+  }
+  ```
+  */
+}
+
+.o-grid__item--gutter-0 + * {
+  padding-left: 0rem;
+}
+
+.o-grid__item--gutter-1 {
+  padding-right: 0.5rem;
+  /* ---
+  section: Grid Item
+  title: o-grid__item--gutter-1
+  order: 5
+  ---
+  Modify the width of a gutter between an individual grid item
+  and the next one to that of 1 base rhythm units.
+
+  ** Do not set item-level gutter modifiers on items in the last column of a grid. **
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item($modifier: gutter-1[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
+    A map of modifiers, where each key is a modifier's name and value is a unitless numbers
+    denoting amounts of rhythm units to serve as gutter-width in each modifier.
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid'>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 1</div>
+  </div>
+  <div class='o-grid__item o-grid__item--gutter-1'>
+  <div class='fpo'>Item 2</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 3</div>
+  </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(gutter-1);
+  ```
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid__item--gutter-1 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  ```
+  */
+}
+
+.o-grid__item--gutter-1 + * {
+  padding-left: 0.5rem;
+}
+
+.o-grid__item--gutter-2 {
+  padding-right: 1rem;
+  /* ---
+  section: Grid Item
+  title: o-grid__item--gutter-2
+  order: 5
+  ---
+  Modify the width of a gutter between an individual grid item
+  and the next one to that of 2 base rhythm units.
+
+  ** Do not set item-level gutter modifiers on items in the last column of a grid. **
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item($modifier: gutter-2[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
+    A map of modifiers, where each key is a modifier's name and value is a unitless numbers
+    denoting amounts of rhythm units to serve as gutter-width in each modifier.
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid'>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 1</div>
+  </div>
+  <div class='o-grid__item o-grid__item--gutter-2'>
+  <div class='fpo'>Item 2</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 3</div>
+  </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(gutter-2);
+  ```
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid__item--gutter-2 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  ```
+  */
+}
+
+.o-grid__item--gutter-2 + * {
+  padding-left: 1rem;
+}
+
+.o-grid__item--gutter-8 {
+  padding-right: 4rem;
+  /* ---
+  section: Grid Item
+  title: o-grid__item--gutter-8
+  order: 5
+  ---
+  Modify the width of a gutter between an individual grid item
+  and the next one to that of 8 base rhythm units.
+
+  ** Do not set item-level gutter modifiers on items in the last column of a grid. **
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item($modifier: gutter-8[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
+    A map of modifiers, where each key is a modifier's name and value is a unitless numbers
+    denoting amounts of rhythm units to serve as gutter-width in each modifier.
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid'>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 1</div>
+  </div>
+  <div class='o-grid__item o-grid__item--gutter-8'>
+  <div class='fpo'>Item 2</div>
+  </div>
+  <div class='o-grid__item'>
+  <div class='fpo'>Item 3</div>
+  </div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(gutter-8);
+  ```
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid__item--gutter-8 {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+  ```
+  */
+}
+
+.o-grid__item--gutter-8 + * {
+  padding-left: 4rem;
+}
+
+.o-grid__item--1-of-12 {
+  -webkit-flex-basis: 8.3333333333%;
+      -ms-flex-preferred-size: 8.3333333333%;
+          flex-basis: 8.3333333333%;
+  max-width: 8.3333333333%;
+}
+
+.no-flexwrap .o-grid__item--1-of-12 {
+  width: 8.3333333333%;
+}
+
+.o-grid__item--2-of-12 {
+  -webkit-flex-basis: 16.6666666667%;
+      -ms-flex-preferred-size: 16.6666666667%;
+          flex-basis: 16.6666666667%;
+  max-width: 16.6666666667%;
+}
+
+.no-flexwrap .o-grid__item--2-of-12 {
+  width: 16.6666666667%;
+}
+
+.o-grid__item--3-of-12 {
+  -webkit-flex-basis: 25%;
+      -ms-flex-preferred-size: 25%;
+          flex-basis: 25%;
+  max-width: 25%;
+}
+
+.no-flexwrap .o-grid__item--3-of-12 {
+  width: 25%;
+}
+
+.o-grid__item--4-of-12 {
+  -webkit-flex-basis: 33.3333333333%;
+      -ms-flex-preferred-size: 33.3333333333%;
+          flex-basis: 33.3333333333%;
+  max-width: 33.3333333333%;
+}
+
+.no-flexwrap .o-grid__item--4-of-12 {
+  width: 33.3333333333%;
+}
+
+.o-grid__item--5-of-12 {
+  -webkit-flex-basis: 41.6666666667%;
+      -ms-flex-preferred-size: 41.6666666667%;
+          flex-basis: 41.6666666667%;
+  max-width: 41.6666666667%;
+}
+
+.no-flexwrap .o-grid__item--5-of-12 {
+  width: 41.6666666667%;
+}
+
+.o-grid__item--6-of-12 {
+  -webkit-flex-basis: 50%;
+      -ms-flex-preferred-size: 50%;
+          flex-basis: 50%;
+  max-width: 50%;
+}
+
+.no-flexwrap .o-grid__item--6-of-12 {
+  width: 50%;
+}
+
+.o-grid__item--7-of-12 {
+  -webkit-flex-basis: 58.3333333333%;
+      -ms-flex-preferred-size: 58.3333333333%;
+          flex-basis: 58.3333333333%;
+  max-width: 58.3333333333%;
+}
+
+.no-flexwrap .o-grid__item--7-of-12 {
+  width: 58.3333333333%;
+}
+
+.o-grid__item--8-of-12 {
+  -webkit-flex-basis: 66.6666666667%;
+      -ms-flex-preferred-size: 66.6666666667%;
+          flex-basis: 66.6666666667%;
+  max-width: 66.6666666667%;
+}
+
+.no-flexwrap .o-grid__item--8-of-12 {
+  width: 66.6666666667%;
+}
+
+.o-grid__item--9-of-12 {
+  -webkit-flex-basis: 75%;
+      -ms-flex-preferred-size: 75%;
+          flex-basis: 75%;
+  max-width: 75%;
+}
+
+.no-flexwrap .o-grid__item--9-of-12 {
+  width: 75%;
+}
+
+.o-grid__item--10-of-12 {
+  -webkit-flex-basis: 83.3333333333%;
+      -ms-flex-preferred-size: 83.3333333333%;
+          flex-basis: 83.3333333333%;
+  max-width: 83.3333333333%;
+}
+
+.no-flexwrap .o-grid__item--10-of-12 {
+  width: 83.3333333333%;
+}
+
+.o-grid__item--11-of-12 {
+  -webkit-flex-basis: 91.6666666667%;
+      -ms-flex-preferred-size: 91.6666666667%;
+          flex-basis: 91.6666666667%;
+  max-width: 91.6666666667%;
+}
+
+.no-flexwrap .o-grid__item--11-of-12 {
+  width: 91.6666666667%;
+}
+
+.o-grid__item--12-of-12 {
+  -webkit-flex-basis: 100%;
+      -ms-flex-preferred-size: 100%;
+          flex-basis: 100%;
+  max-width: 100%;
+}
+
+.no-flexwrap .o-grid__item--12-of-12 {
+  width: 100%;
+}
+
+/* ---
+  section: Grid Item
+  title: o-grid__item--X-of-12
+  order: 6
+  ---
+  Set the width of a grid item as a ratio of `X` parts of 12 columns.
+
+  All JigSass Grid elements (grid cotainer, grid item and all their modifiers) are completly
+  responsive using [JigSass MQ](https://www.github.com/txhawks/jigsass-tools-mq) and the
+  breakpoints defined in [$jigsass-breakpoints]
+  (https://txhawks.github.io/jigsass-tools-mq/#variable-jigsass-breakpoints)`, though the most
+  common use case is with item-width modifiers.
+
+  Based on the arguments passed to the `jigsass-grid-item` mixin, responsive modifiers are
+  generated according to the following logic:
+  .o-grid__item--modifier-[-from-{breakpoint-name}][-until-{breakpoint-name}][-misc-{breakpoint-name}]
+
+  So, assuming the `medium`, `large` and `landscape` breakpoints are defined in
+  `$jigsass-breakpoints` as `600px`, `1024px` and `(orientation: landscape)` respectively,
+  `@include jigsass-grid-item(1-of-12)` will generate the `.item-class--1-of12`
+  class, which is the default, and is not limitted to any media-query.
+
+  `@include jigsass-grid-item(1-of-12, $until: medium)` will generate the
+  `.item-class--1-of12--until-medium` class, which will go into effect at
+  `(max-width: 37.49em)` and will override styles in the default class until that point.
+
+  `@include jigsass-grid-item(1-of-12, $from: large, $misc: landscape)` will
+  generate the `.item-class--1-of12--from-large-when-landscape` class, which will
+  go into effect at `(min-width: 64em) and (orientation: landscape)` and will override styles in
+  the default class from that point on.
+
+  Regardless of how many times a class is included, or where, it will only be generated once, where
+  `jigsass-object-grid` was imported, leaving us with a css file as small as possible,
+  and a predictable cascade.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item($modifier: X-of12[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-cols` (defalut: `12`): Holds a list of unitless numbers, each number is an
+    available column count. E.g., if `$jigsass-grid-cols: 10 12;`, you will be able to create
+    `x`-of-10 and `x`-of-12 classes.
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class="o-grid"><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--11-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--1-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--2-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--10-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--9-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--3-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--4-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--8-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--7-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--5-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--6-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--6-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--5-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--7-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--8-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--4-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--3-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--9-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--10-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--2-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--1-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 o-grid__item--11-of-12--from-medium"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--12-of-12 "><div class="fpo"></div></div></section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(X-of-12);
+  ```
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is enabled
+  .o-grid__item--6-of-12 {
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+
+  // When `$jigsass-grid-flexbox-fallback` is set to `no-flexwrap`
+  .no-flexwrap .o-grid__item--6-of-12 {
+    width: 50%;
+  }
+
+  // When `$jigsass-grid-flexbox` is disabled
+  .o-grid__item--6-of-12 {
+    width: 50%;
+  }
+  ```
+  */
+.o-grid__item--offset-1-of-12 {
+  margin-left: 8.3333333333%;
+}
+
+.o-grid__item--offset-2-of-12 {
+  margin-left: 16.6666666667%;
+}
+
+.o-grid__item--offset-3-of-12 {
+  margin-left: 25%;
+}
+
+.o-grid__item--offset-4-of-12 {
+  margin-left: 33.3333333333%;
+}
+
+.o-grid__item--offset-5-of-12 {
+  margin-left: 41.6666666667%;
+}
+
+.o-grid__item--offset-6-of-12 {
+  margin-left: 50%;
+}
+
+.o-grid__item--offset-7-of-12 {
+  margin-left: 58.3333333333%;
+}
+
+.o-grid__item--offset-8-of-12 {
+  margin-left: 66.6666666667%;
+}
+
+.o-grid__item--offset-9-of-12 {
+  margin-left: 75%;
+}
+
+.o-grid__item--offset-10-of-12 {
+  margin-left: 83.3333333333%;
+}
+
+.o-grid__item--offset-11-of-12 {
+  margin-left: 91.6666666667%;
+}
+
+.o-grid__item--offset-12-of-12 {
+  margin-left: 100%;
+}
+
+/* ---
+  section: Grid Item
+  title: o-grid__item--offset-X-of-12
+  order: 7
+  ---
+  Offset a grid item by X of 12 columns.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item($modifier: offset-X-of12[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-cols` (defalut: `12`): Holds a list of unitless numbers, each number is an
+    available column count. E.g., if `$jigsass-grid-cols: 10 12;`, you will be able to create
+    `x`-of-10 and `x`-of-12 classes.
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class="o-grid"><div class="o-grid__item o-grid__item--1-of-12 o-grid__item--offset-11-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--2-of-12 o-grid__item--offset-10-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--3-of-12 o-grid__item--offset-9-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--4-of-12 o-grid__item--offset-8-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--5-of-12 o-grid__item--offset-7-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--6-of-12 o-grid__item--offset-6-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--7-of-12 o-grid__item--offset-5-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--8-of-12 o-grid__item--offset-4-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--9-of-12 o-grid__item--offset-3-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--10-of-12 o-grid__item--offset-2-of-12"><div class="fpo"></div></div><div class="o-grid__item o-grid__item--11-of-12 o-grid__item--offset-1-of-12"><div class="fpo"></div></div></section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(offset-6-of-12);
+  ```
+
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  // When `$jigsass-grid-flexbox` is disabled
+  .o-grid__item--6-of-12 {
+    margin-(left|right): 50%;
+  }
+  ```
+  */
+.o-grid__item--gutter-rule-1 {
+  position: relative;
+  /* ---
+  section: Grid Item
+  title: o-grid__item--gutter-rule-1
+  order: 8
+  ---
+  Set a gutter rule on a grid item, visually setting it apart from the preciding grid item.
+
+
+  #### include with:
+  ```scss
+  @include jigsass-grid-item($modifier: gutter-rule-1[, $from, $until, $misc]);
+  ```
+
+
+  #### Related Variables:
+  - `$jigsass-grid-gutter-rules`: Specifies styles for column rule modifiers<br />
+    A map where each key is a modifier's name, and its value is
+    the border style to apply to that modifier's column rule.
+
+
+  #### Related Mixins:
+  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
+  which can be responsive (i.e., limited to a certain media-query).
+
+
+  #### Usage example:
+  ```example:html
+  <!-- In HTML -->
+  <section class='o-grid o-grid--equal-height'>
+  <div class='o-grid__item'><div class='fpo fpo--b'>No rule</div></div>
+
+  <div class='o-grid__item o-grid__item--gutter-rule-1'>
+    <div class='fpo fpo--b'>Has rule</div>
+  </div>
+
+  <div class='o-grid__item'><div class='fpo fpo--b'>No rule</div></div>
+  </section>
+  ```
+
+  ```scss
+  // --- In Sass --- //
+  @include jigsass-grid-item(gutter-rule-1);
+  ```
+  ** CSS output: **
+
+  ```scss
+  // --- CSS --- //
+  .o-grid__item--gutter-rule-1 {
+    padding-(left|right): 8rem;
+  }
+  ```
+  */
+}
+
+.o-grid__item--gutter-rule-1:before {
+  border-left: 1px solid #ccc;
+  bottom: 0;
+  content: '';
+  display: block;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+@media (min-width: 37.5em) {
+  .o-grid__item--1-of-12--from-medium {
+    -webkit-flex-basis: 8.3333333333%;
+        -ms-flex-preferred-size: 8.3333333333%;
+            flex-basis: 8.3333333333%;
+    max-width: 8.3333333333%;
+  }
+  .no-flexwrap .o-grid__item--1-of-12--from-medium {
+    width: 8.3333333333%;
+  }
+  .o-grid__item--2-of-12--from-medium {
+    -webkit-flex-basis: 16.6666666667%;
+        -ms-flex-preferred-size: 16.6666666667%;
+            flex-basis: 16.6666666667%;
+    max-width: 16.6666666667%;
+  }
+  .no-flexwrap .o-grid__item--2-of-12--from-medium {
+    width: 16.6666666667%;
+  }
+  .o-grid__item--3-of-12--from-medium {
+    -webkit-flex-basis: 25%;
+        -ms-flex-preferred-size: 25%;
+            flex-basis: 25%;
+    max-width: 25%;
+  }
+  .no-flexwrap .o-grid__item--3-of-12--from-medium {
+    width: 25%;
+  }
+  .o-grid__item--4-of-12--from-medium {
+    -webkit-flex-basis: 33.3333333333%;
+        -ms-flex-preferred-size: 33.3333333333%;
+            flex-basis: 33.3333333333%;
+    max-width: 33.3333333333%;
+  }
+  .no-flexwrap .o-grid__item--4-of-12--from-medium {
+    width: 33.3333333333%;
+  }
+  .o-grid__item--5-of-12--from-medium {
+    -webkit-flex-basis: 41.6666666667%;
+        -ms-flex-preferred-size: 41.6666666667%;
+            flex-basis: 41.6666666667%;
+    max-width: 41.6666666667%;
+  }
+  .no-flexwrap .o-grid__item--5-of-12--from-medium {
+    width: 41.6666666667%;
+  }
+  .o-grid__item--6-of-12--from-medium {
+    -webkit-flex-basis: 50%;
+        -ms-flex-preferred-size: 50%;
+            flex-basis: 50%;
+    max-width: 50%;
+  }
+  .no-flexwrap .o-grid__item--6-of-12--from-medium {
+    width: 50%;
+  }
+  .o-grid__item--7-of-12--from-medium {
+    -webkit-flex-basis: 58.3333333333%;
+        -ms-flex-preferred-size: 58.3333333333%;
+            flex-basis: 58.3333333333%;
+    max-width: 58.3333333333%;
+  }
+  .no-flexwrap .o-grid__item--7-of-12--from-medium {
+    width: 58.3333333333%;
+  }
+  .o-grid__item--8-of-12--from-medium {
+    -webkit-flex-basis: 66.6666666667%;
+        -ms-flex-preferred-size: 66.6666666667%;
+            flex-basis: 66.6666666667%;
+    max-width: 66.6666666667%;
+  }
+  .no-flexwrap .o-grid__item--8-of-12--from-medium {
+    width: 66.6666666667%;
+  }
+  .o-grid__item--9-of-12--from-medium {
+    -webkit-flex-basis: 75%;
+        -ms-flex-preferred-size: 75%;
+            flex-basis: 75%;
+    max-width: 75%;
+  }
+  .no-flexwrap .o-grid__item--9-of-12--from-medium {
+    width: 75%;
+  }
+  .o-grid__item--10-of-12--from-medium {
+    -webkit-flex-basis: 83.3333333333%;
+        -ms-flex-preferred-size: 83.3333333333%;
+            flex-basis: 83.3333333333%;
+    max-width: 83.3333333333%;
+  }
+  .no-flexwrap .o-grid__item--10-of-12--from-medium {
+    width: 83.3333333333%;
+  }
+  .o-grid__item--11-of-12--from-medium {
+    -webkit-flex-basis: 91.6666666667%;
+        -ms-flex-preferred-size: 91.6666666667%;
+            flex-basis: 91.6666666667%;
+    max-width: 91.6666666667%;
+  }
+  .no-flexwrap .o-grid__item--11-of-12--from-medium {
+    width: 91.6666666667%;
+  }
+  .o-grid__item--12-of-12--from-medium {
+    -webkit-flex-basis: 100%;
+        -ms-flex-preferred-size: 100%;
+            flex-basis: 100%;
+    max-width: 100%;
+  }
+  .no-flexwrap .o-grid__item--12-of-12--from-medium {
+    width: 100%;
+  }
+}
+
+@media (min-width: 64em) {
+  .o-grid__item--from-large {
+    box-sizing: border-box;
+    list-style: none;
+    -webkit-flex-basis: auto;
+        -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+    -webkit-box-flex: 1;
+    -webkit-flex-grow: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1;
+    -webkit-flex-shrink: 1;
+        -ms-flex-negative: 1;
+            flex-shrink: 1;
+  }
+  .no-flexwrap .o-grid__item--from-large {
+    text-align: left;
+    display: inline-block;
+    letter-spacing: normal;
+    text-rendering: auto;
+    word-spacing: normal;
+  }
+}
+
+html {
+  font-size: 37.5%;
+}
+
+body {
+  font-size: 2.6666666667em;
+  line-height: 4rem;
+}
+
+html {
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.fpo {
+  background-color: #09a5d9;
+  border: 1px solid #0ab8f1;
+  box-sizing: border-box;
+  color: #fff;
+  margin-bottom: 4rem;
+  padding: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.fpo--b,
+.fpo--c {
+  margin-bottom: 0;
+}
+
+.fpo--b {
+  background-color: #0892c1;
+}
+
+.fpo--c {
+  background-color: #0780a8;
+}
+
+.fpo--tall {
+  min-height: 25rem;
+}
+
+.fpo--fixed {
+  float: left;
+  width: 200px;
+}
+
+.u-fxb--200px {
+  -webkit-flex-basis: 200px;
+      -ms-flex-preferred-size: 200px;
+          flex-basis: 200px;
+}
+
+.u-mw--200px {
+  max-width: 200px;
+}

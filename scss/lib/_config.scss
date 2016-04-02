@@ -1,0 +1,203 @@
+// *************************************
+//
+// # jigsass-object-grid Config
+// -> Configuration variables
+//
+////
+/// @group Grid - 00 - Config
+////
+//
+// *************************************
+
+@charset 'UTF-8';
+
+
+// -------------------------------------
+// Variables
+// -------------------------------------
+
+// stylelint-disable
+/* ---
+section: Grid
+title: Configuration
+order: 1
+---
+JigSass Grid can be tweaked using the following built-in configuration variables.
+To override the default values, set your own _before_ importing JigSass Grid.
+
+
+#### Grid container class name
+```scss
+$jigsass-grid-class
+```
+**Type:** `String`
+
+The class-name (sans the leading `.`) used for grid containers.
+
+**Default:** `o-string`
+
+
+#### Grid item class name
+```scss
+$jigsass-grid-item-class
+```
+**Type:** `String`
+
+The class-name (sans the leading `.`) used for grid items
+
+**Default:** $jigsass-grid-class + `__item`
+
+
+#### Flexbox
+```scss
+$jigsass-grid-flexbox
+```
+**Type:** `Boolean`
+
+Determines if the grid system be based on flexbox.
+
+**Default:** `true`
+
+
+#### Flexbox fallback
+```scss
+$jigsass-grid-flexbox-fallback
+```
+**Type:** `Boolean` or `String`<br />
+Determines if to include a flexbox fallback and the qualifier class
+to use if so (e.g, `.no-flexwrap` when using Modernizr defaults)
+
+Set to `false` to disable fallback altogether, and to a class-name
+(sans the leading `.`) used as the qualifier class if fallback is
+desirable.
+
+**Default:** `no-flexwrap`
+
+
+#### Default gutter width
+```scss
+$jigsass-grid-default-gutter
+```
+
+**Type:** `Number`
+
+A unitless number. The default number of base rhythm units
+(as defined in [$jigsass-sizes.rhythm-unit](https://txhawks.github.io/jigsass-tools-typography/#variable-_jigsass-default-sizes)) to use as the default gutter between grid items.
+
+**Default:** `4`
+
+
+#### Gutter width Modifiers
+```scss
+$jigsass-grid-gutter-modifiers
+```
+
+**Type:** `Map`
+
+Specifies gutter-width modifiers that will be available.
+
+A map where each key is a modifier's name and its value is a
+unitless number, denoting the number of rhythm units to serve
+as gutter-width for each modifier.
+
+**Default:** `(gutter-0: 0, gutter-1: 1, gutter-2: 2, gutter-8: 8)`
+
+
+#### Grid columns
+```scss
+$jigsass-grid-cols
+```
+
+**Type:** `List`
+
+A list of unitless numbers, specifying a number of columns a grid item can be split into.
+Setting `$jigsass-grid-cols` to `7 12`would mean that grid items could be `x-of-7` or
+`x-of-12` in width.
+
+**Default:** `12`
+
+
+#### Gutter rules
+
+Specifies names and styles of gutter rule modifiers
+
+A map where each key is a modifier's name, and its value is
+the border style to apply to that modifier's column rule.
+
+**Type:** `Map`
+
+**Default:** `(gutter-rule-1: 1px solid #ccc)`
+*/
+// stylelint-enable
+
+
+/// The class-name (sans the leading `.`) used for grid containers
+/// ---
+/// @type String
+/// ---
+$jigsass-grid-class: o-grid !default;
+
+/// The class-name (sans the leading `.`) used for grid items
+/// ---
+/// @type String
+/// ---
+$jigsass-grid-item-class: #{$jigsass-grid-class}__item !default;
+
+/// Determines if the grid system be based on flexbox.
+/// ---
+/// @type Boolean
+/// ---
+$jigsass-grid-flexbox: true !default;
+
+/// Determines if to include a flexbox fallback and the qualifier class
+/// to use if so (e.g, `.no-flexwrap` when using Modernizr defaults)
+///
+/// Set to `false` to disable fallback altogether, and to a class-name
+/// (sans the leading `.`) used as the qualifier class if fallback is
+/// desirable.
+/// ---
+/// @type String | Boolean
+/// ---
+$jigsass-grid-flexbox-fallback: 'no-flexwrap' !default;
+
+/// The default number of base rhythm units
+/// (as defined in `$jigsass-sizes.rhythm-unit`).
+///
+/// Must be a unitless number.
+/// ---
+/// @type Number
+/// ---
+$jigsass-grid-default-gutter: 4 !default;
+
+/// Specifies the gutter-width modifiers that will be available
+///
+/// A map where each key is a modifier's name and its value is a
+/// unitless number, denoting the number of rhythm units to serve
+/// as gutter-width for each modifier.
+/// ---
+/// @type Map
+/// ---
+$jigsass-grid-gutter-modifiers: (
+ gutter-0: 0,
+ gutter-1: 1,
+ gutter-2: 2,
+ gutter-8: 8,
+) !default;
+
+/// A list of column configurations to generate
+///
+/// Will generate x-of-number column objects for
+/// each number in the list.
+/// ---
+/// @type Number|List
+/// ---
+$jigsass-grid-cols: 12 !default;
+
+/// Specifies names and styles of gutter rule modifiers
+///
+/// A map where each key is a modifier's name, and its value is
+/// the border style to apply to that modifier's column rule.
+/// ---
+/// @type Map
+/// ---
+$jigsass-grid-gutter-rules: (gutter-rule-1: 1px solid #ccc) !default;

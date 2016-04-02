@@ -1,0 +1,30 @@
+// *************************************
+//
+// # jigsass-object-grid
+// -> A simple flexbox-based grid system
+//
+// Author: TxHawks (tofu.hawks@gmail.com)
+//
+// *************************************
+
+@charset 'UTF-8';
+
+// -------------------------------------
+// variables
+// -------------------------------------
+
+// Store generated doclets, so that they are not rendered twice
+$_doclet-store: ();
+
+
+
+
+
+// -------------------------------------
+// Imports
+// -------------------------------------
+
+@import 'lib/config';
+@import 'lib/intro';
+@import 'lib/grid';
+@import 'lib/item';
