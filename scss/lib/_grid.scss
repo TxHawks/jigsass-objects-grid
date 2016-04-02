@@ -24,11 +24,11 @@
 @if (not function-exists(jigsass-rhythm)) {
   @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-typography`. Please import it.'
 }
-@if (not mixin-exists(jigsass-object)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
-}
 @if (not mixin-exists(jigsass-bidi)) {
   @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.'
+}
+@if (not mixin-exists(jigsass-define-object)) {
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
 }
 
 
@@ -97,6 +97,10 @@ Will Generate:
 ///   The name of a miscellaneous media query condition.
 /// ---
 @mixin jigsass-grid($modifier: false, $from: false, $until: false, $misc: false) {
+  @if (not mixin-exists(jigsass-object)) {
+    @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
+  }
+
   @include jigsass-object($jigsass-grid-class, $from, $until, $misc, $modifier)
 }
 
@@ -121,6 +125,9 @@ Will Generate:
 /// 3. Fixes WebKit bug.
 /// ---
 @mixin _jigsass-grid-flaxbox-fallback-styles() {
+  @if (not mixin-exists(jigsass-bidi)) {
+    @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.'
+  }
   @include jigsass-bidi(text-align, start); // [1]
   display: block;
   letter-spacing: -0.31em;  // [2]
