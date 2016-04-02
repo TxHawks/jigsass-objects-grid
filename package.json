@@ -18,6 +18,8 @@
     "bugs": "TxHawks/jigsass-objects-grid/issues"
   },
   "keywords": [
+    "grid system",
+    "flexbox",
     "jigsass",
     "sass",
     "scss",
