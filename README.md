@@ -48,14 +48,14 @@ All classes and each modifier (including responsive modifiers) must be explicitl
 to be available in CSS
 
 
-** Grid containers:**<br />
+**Grid containers:**<br />
 `.o-grid`
   - `--start`, `--center`, `--end`, `--rev`, `--space-between`, `--space-around`
   - `--top`, `--middle`, `--bottom`, `--equal-height`
   - `--gutter-X` (gutter width, See [here](https://txhawks.github.io/jigsass-objects-grid/#gutter-width-modifiers)).
 
 
-** Grid items:**<br />
+**Grid items:**<br />
 `.o-grid__item`
   - `--col`, `--center, `
   - `--top`, `--middle`, `--bottom`, `--equal-height`
