@@ -20,22 +20,22 @@ npm i -S jigsass-object-grid
 
 
 #### Features
-  - [Responsive](#responsive).
-  - [Infinitly nestable](#nested-grids).
-  - [Fixed fluid](#fixed-fluid) layouts.
+  - [Responsive](https://txhawks.github.io/jigsass-objects-grid/#responsive).
+  - [Infinitly nestable](https://txhawks.github.io/jigsass-objects-grid/#nested-grids).
+  - [Fixed fluid](https://txhawks.github.io/jigsass-objects-grid/#fixed-fluid) layouts.
   - Column wrapping.
-  - [Equal height columns](#{$_grid-anchor}--equal-height).
+  - [Equal height columns](https://txhawks.github.io/jigsass-objects-grid/#o-grid--equal-height).
   - Automatic distribution of widths.
   - Custom horizontal alignments of items <br />
-    ([start](#{$_grid-anchor}-start),
-    [center](#{$_grid-anchor}-center),
-    [end](#{$_grid-anchor}-end),
-    [reversed](#{$_grid-anchor}-rev),
-    [space-between](#{$_grid-anchor}-space-between),
-    [space-around](#{$_grid-anchor}-space-around)).
-  - Custom vertical alignments of items ([top](#{$_grid-anchor}-top),
-    [middle](#{$_grid-anchor}-middle),
-    [bottom](#{$_grid-anchor}-bottom)).
+    ([start](https://txhawks.github.io/jigsass-objects-grid/#o-grid-start),
+    [center](https://txhawks.github.io/jigsass-objects-grid/#o-grid-center),
+    [end](https://txhawks.github.io/jigsass-objects-grid/#o-grid-end),
+    [reversed](https://txhawks.github.io/jigsass-objects-grid/#o-grid-rev),
+    [space-between](https://txhawks.github.io/jigsass-objects-grid/#o-grid-space-between),
+    [space-around](https://txhawks.github.io/jigsass-objects-grid/#o-grid-space-around)).
+  - Custom vertical alignments of items ([top](https://txhawks.github.io/jigsass-objects-grid/#o-grid-top),
+    [middle](https://txhawks.github.io/jigsass-objects-grid/#o-grid-middle),
+    [bottom](https://txhawks.github.io/jigsass-objects-grid/#o-grid-bottom)).
   - Fluid by default.
   - Configureable grid-wide gutters widths.
   - Overrideable gutter widths on a per-item basis.
@@ -49,18 +49,18 @@ to be available in CSS
 
 
 ** Grid containers:**<br />
-`.#{$_grid-class}`
+`.o-grid`
   - `--start`, `--center`, `--end`, `--rev`, `--space-between`, `--space-around`
   - `--top`, `--middle`, `--bottom`, `--equal-height`
-  - `--gutter-X` (gutter width, See [here](#gutter-width-modifiers)).
+  - `--gutter-X` (gutter width, See [here](https://txhawks.github.io/jigsass-objects-grid/#gutter-width-modifiers)).
 
 
 ** Grid items:**<br />
-`.#{$_item-class}`
+`.o-grid__item`
   - `--col`, `--center, `
   - `--top`, `--middle`, `--bottom`, `--equal-height`
-  - `--gutter-X` (gutter width, See [here](#gutter-width-modifiers)).
-  - `--gutter-gutter-rule-X` (See [here](#gutter-rules)).
+  - `--gutter-X` (gutter width, See [here](https://txhawks.github.io/jigsass-objects-grid/#gutter-width-modifiers)).
+  - `--gutter-gutter-rule-X` (See [here](https://txhawks.github.io/jigsass-objects-grid/#gutter-rules)).
   - `--X-of-Y`
   - `--offset-X-of-Y`
 
@@ -73,16 +73,16 @@ First, you would need to import JigSass Grid:
 @import 'path/to/jigsass-object-grid/scss/index'
 ```
 
-And optionally [reconfigure](#configuration) the defaults to you liking.
+And optionally [reconfigure](https://txhawks.github.io/jigsass-objects-grid/#configuration) the defaults to your liking.
 
-To create a grid context, simply attach the #{$_grid-class} class to an element, Any element,
+To create a grid context, simply attach the `.o-grid` class to an element, Any element,
 which will serve as a grid container. You can now add grid items to it (with a class of
-#{$_item-class}). Grid containers' only legitimate children are grid items, and those, in turen,
+.o-grid__item). Grid containers' only legitimate children are grid items, and those, in turn,
 may only reside within a grid container.
 
 Like all other JigSass modules, JigSass Grid does not automatically generate any CSS on import.
 In order to use its classes, you would have to first explicitly indicate your intention to use
-them, using the [jigsass-grid](#jigsass-grid) or [jigsass-grid-item](#jigsass-grid-item) mixins.
+them, using the [jigsass-grid](https://txhawks.github.io/jigsass-objects-grid/#jigsass-grid) or [jigsass-grid-item](https://txhawks.github.io/jigsass-objects-grids/#jigsass-grid-item) mixins.
 This way our css remains small and maintainable:
 
 ```scss
@@ -92,7 +92,7 @@ This way our css remains small and maintainable:
 
 Regardless of how many times a class is included, or where, it will only be generated once, where
 `jigsass-object-grid` was imported to our main sass file, leaving us with a css file as small as
-possible, and a predictable cascade for more example, see [here](#responsive).
+possible, and a predictable cascade for more example, see [here](https://txhawks.github.io/jigsass-objects-grid/#responsive).
 
 ## Contributing
 
