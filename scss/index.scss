@@ -14,7 +14,7 @@
 // -------------------------------------
 
 // Store generated doclets, so that they are not rendered twice
-$_doclet-store: ();
+$_doclet-store: () !default;
 
 
 
