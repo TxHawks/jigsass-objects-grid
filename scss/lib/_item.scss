@@ -138,7 +138,7 @@ Will Generate:
   // 2. Allows lists to be grids.
   // ---
   @include jigsass-classname() {
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
 
     box-sizing: border-box; // [1]
     list-style: none; // [2]
@@ -307,7 +307,7 @@ Will Generate:
   // ---
   @if ($jigsass-grid-flexbox) {
     @include jigsass-classname($modifier: col) {
-      $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
 
       flex-direction: column;
 
@@ -381,7 +381,7 @@ Will Generate:
   // ---
   @if ($jigsass-grid-flexbox) {
     @include jigsass-classname($modifier: col) {
-      $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
 
       flex-grow: 0;
       flex-shrink: 0;
@@ -471,7 +471,7 @@ Will Generate:
   // Prevents a grid item from growing or shrinking
   // ---
   @include jigsass-classname($modifier: center) {
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
 
     display: block;
     margin-left: auto;
@@ -562,7 +562,7 @@ Will Generate:
 
     // Modify item-level gutter widths
     @include jigsass-classname($modifier: #{$gutter-modifier}) {
-      $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
 
       @include jigsass-bidi(padding-end, $_gutter / 2);
 
@@ -911,7 +911,7 @@ Will Generate:
 
   @each $rule-modifier, $rule-style in $jigsass-grid-gutter-rules {
     @include jigsass-classname($modifier: #{$rule-modifier}) {
-      $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
 
       // Create positioning context for column rule pseudo element
       position: relative;

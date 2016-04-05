@@ -194,7 +194,7 @@ Will Generate:
     @else {
       @include _jigsass-grid-flaxbox-fallback-styles;
     }
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -349,7 +349,7 @@ Will Generate:
       @include jigsass-bidi(text-align, start);
     }
 
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -447,7 +447,7 @@ Will Generate:
       text-align: center;
     }
 
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -544,7 +544,7 @@ Will Generate:
       @include jigsass-bidi(text-align, end);
     }
 
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -649,7 +649,7 @@ Will Generate:
       }
     }
 
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -749,7 +749,7 @@ Will Generate:
         display: flex;
       }
 
-      $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
       @if (not index($_doclet-store, $_doclet)) {
         // stylelint-disable
   /* ---
@@ -840,7 +840,7 @@ Will Generate:
       verticle-align: top;
     }
 
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -916,7 +916,7 @@ Will Generate:
       verticle-align: middle;
     }
 
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -994,7 +994,7 @@ Will Generate:
       verticle-align: bottom;
     }
 
-    $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -1078,7 +1078,7 @@ Will Generate:
     @include jigsass-classname($modifier: space-between) {
       justify-content: space-between;
 
-      $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
       @if (not index($_doclet-store, $_doclet)) {
         // stylelint-disable
   /* ---
@@ -1147,7 +1147,7 @@ Will Generate:
     @include jigsass-classname($modifier: space-around) {
       justify-content: space-around;
 
-      $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
       @if (not index($_doclet-store, $_doclet)) {
         // stylelint-disable
   /* ---
@@ -1240,7 +1240,7 @@ Will Generate:
         padding-right: $_gutter / 2;
       }
 
-      $_doclet: $_jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
       @if (not index($_doclet-store, $_doclet)) {
         // stylelint-disable
   /* ---
