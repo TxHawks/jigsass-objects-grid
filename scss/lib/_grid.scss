@@ -16,19 +16,19 @@
 // -------------------------------------
 
 @if (not function-exists(jigsass-get)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-maps. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-maps. Please import it.';
 }
 @if (not mixin-exists(jigsass-mq)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-mq. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-mq. Please import it.';
 }
 @if (not function-exists(jigsass-rhythm)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-typography`. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-typography`. Please import it.';
 }
 @if (not mixin-exists(jigsass-bidi)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.';
 }
-@if (not mixin-exists(jigsass-define-object)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
+@if (not mixin-exists(jigsass-object)) {
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.';
 }
 
 
@@ -49,60 +49,7 @@
 // Mixins
 // -------------------------------------
 
-// stylelint-disable
-/* ---
-section: Grid
-title: Grid container mixin
-order: 2
----
-```scss
-@mixin jigsass-grid($modifier: false, $from: false, $until: false, $misc: false) { ... }
-```
-
-#### Description
-Generate a grid-container class or modifier, which can be responsive (i.e., limited to
-certain breakpoint defined in [$jigsass-breakpoints](https://txhawks.github.io/jigsass-tools-mq/#variable-jigsass-breakpoints)).
-
-#### Parameters
-Name | Description | Type | Default Value
---- | --- | --- | ---
-`$modifier` | A grid-container modifier, e.g., `equal-height` | `String` or `Boolean` | false
-`$from` | The name of breakpoint used as the min-width condition | `String` or `Boolean` | false
-`$until` | The name of breakpoint used as the max-width condition | `String` or `Boolean` | false
-`$misc` | The name of a miscellaneous media query condition | `String` or `Boolean` | false
-
-#### Example
-```scss
-@include jigsass-grid($modifier: center, $from: small, $until: large, $misc: landscape) { ... }
-```
-Will Generate:
-```css
-@media (min-width: 30em) and (max-width: 63.99em) and (orientation: landscape) {
- .o-grid--center--from-small-until-large-when-landscape { ... }
-}
-```
-*/
-// stylelint-enable
-
-/// Generate a grid-container class or modifier, which can be
-/// responsive (i.e., limited to a certain media-query)
-/// ---
-/// @param {String | Boolean} $modifier
-///   A grid-container modifier, e.g., `equal-height`
-/// @param {String | Boolean} $from
-///   The name of breakpoint used as the min-width condition.
-/// @param {String | Boolean} $until
-///   The name of breakpoint used as the max-width condition.
-/// @param {String | Boolean} $misc
-///   The name of a miscellaneous media query condition.
-/// ---
-@mixin jigsass-grid($modifier: false, $from: false, $until: false, $misc: false) {
-  @if (not mixin-exists(jigsass-object)) {
-    @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
-  }
-
-  @include jigsass-object($jigsass-grid-class, $from, $until, $misc, $modifier)
-}
+//
 
 
 
@@ -126,7 +73,7 @@ Will Generate:
 /// ---
 @mixin _jigsass-grid-flaxbox-fallback-styles() {
   @if (not mixin-exists(jigsass-bidi)) {
-    @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.'
+    @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.';
   }
   @include jigsass-bidi(text-align, start); // [1]
   display: block;
@@ -148,7 +95,7 @@ Will Generate:
 // Definitions
 // -------------------------------------
 
-@include jigsass-define-object($jigsass-grid-class) {
+@include jigsass-object($jigsass-grid-class, $jigsass-grid-conf) {
   // Add namespace to class names
   $_ns: if($jigsass-namespace == '', '', #{$jigsass-namespace}-);
   $_grid-class: #{$_ns}#{$jigsass-grid-class};
@@ -194,7 +141,7 @@ Will Generate:
     @else {
       @include _jigsass-grid-flaxbox-fallback-styles;
     }
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -213,12 +160,6 @@ Will Generate:
   all grid items will be equally distributed along a single row.
 
 
-  #### include with:
-  ```scss
-  @include jigsass-grid([$modifier, $from, $until, $misc]);
-  ```
-
-
   #### Related variables:
 
   - `$jigsass-grid-class` (default: `grid`): Determines the class-name used
@@ -232,12 +173,6 @@ Will Generate:
   - `$jigsass-grid-default-gutter` (default: `4`): A unitless number used to determine number of
     base rhythm units (as defined in `$jigsass-sizes.rhythm-unit`) to use as gutter length
     between grid items in the default grid container.
-
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -264,10 +199,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid();
-  ```
 
   ** CSS output: **
 
@@ -349,7 +280,7 @@ Will Generate:
       @include jigsass-bidi(text-align, start);
     }
 
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -358,17 +289,6 @@ Will Generate:
   order: 1
   ---
   Aligns grid items to horizontal start of the grid container.
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: start[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -391,11 +311,6 @@ Will Generate:
       <div class='fpo'>1 of 1</div>
     </div>
   </section>
-  ```
-
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(start);
   ```
 
   ** CSS output: **
@@ -447,7 +362,7 @@ Will Generate:
       text-align: center;
     }
 
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -456,17 +371,6 @@ Will Generate:
   order: 2
   ---
   Aligns grid items to horizontal center of the grid container.
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: center[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -489,11 +393,6 @@ Will Generate:
       <div class='fpo'>1 of 1</div>
     </div>
   </section>
-  ```
-
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(center);
   ```
 
   ** CSS output: **
@@ -544,7 +443,7 @@ Will Generate:
       @include jigsass-bidi(text-align, end);
     }
 
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -553,17 +452,6 @@ Will Generate:
   order: 3
   ---
   Aligns grid items to horizontal end of the grid container.
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: end[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -586,11 +474,6 @@ Will Generate:
       <div class='fpo'>1 of 1</div>
     </div>
   </section>
-  ```
-
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(end);
   ```
 
   ** CSS output: **
@@ -649,7 +532,7 @@ Will Generate:
       }
     }
 
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -660,17 +543,6 @@ Will Generate:
   Reversed grid.
 
   items 1, 2, 3, 4 in the markup will be visually displayed in 4, 3, 2, 1 order.
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: rev[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -690,11 +562,6 @@ Will Generate:
       <div class='fpo'>Item 4</div>
     </div>
   </section>
-  ```
-
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(rev);
   ```
 
   ** CSS output: **
@@ -749,7 +616,7 @@ Will Generate:
         display: flex;
       }
 
-      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
       @if (not index($_doclet-store, $_doclet)) {
         // stylelint-disable
   /* ---
@@ -760,18 +627,6 @@ Will Generate:
   Stretch all grid items on a single row to the height of the tallest grid item.
 
   Only works with flexbox, no fallback available.
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: equal-height[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
-
 
   #### Usage example:
   ```example:html
@@ -808,10 +663,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(equal-height);
-  ```
 
   ** CSS output: **
 
@@ -840,7 +691,7 @@ Will Generate:
       verticle-align: top;
     }
 
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -849,17 +700,6 @@ Will Generate:
   order: 6
   ---
   Top aligned grid items
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: top[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -884,10 +724,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(top);
-  ```
 
   ** CSS output: **
 
@@ -907,6 +743,7 @@ Will Generate:
     }
   }
 
+
   // Middle-alligned grid-cells
   // ---
   @include jigsass-classname($modifier: middle) {
@@ -916,7 +753,7 @@ Will Generate:
       verticle-align: middle;
     }
 
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -925,17 +762,6 @@ Will Generate:
   order: 7
   ---
   Middle aligned grid items
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: middle[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -960,10 +786,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(middle);
-  ```
 
   ** CSS output: **
 
@@ -994,7 +816,7 @@ Will Generate:
       verticle-align: bottom;
     }
 
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
     @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
   /* ---
@@ -1003,17 +825,6 @@ Will Generate:
   order: 8
   ---
   Bottom aligned grid items
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: bottom[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -1038,10 +849,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(bottom);
-  ```
 
   ** CSS output: **
 
@@ -1078,7 +885,7 @@ Will Generate:
     @include jigsass-classname($modifier: space-between) {
       justify-content: space-between;
 
-      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
       @if (not index($_doclet-store, $_doclet)) {
         // stylelint-disable
   /* ---
@@ -1089,17 +896,6 @@ Will Generate:
   Distribute grid items equally across the main flex axis.
 
   ** Use with care. Only available with flexbox. No fallback. **
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: space-between[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -1118,10 +914,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(space-between);
-  ```
 
   ** CSS output: **
 
@@ -1147,7 +939,7 @@ Will Generate:
     @include jigsass-classname($modifier: space-around) {
       justify-content: space-around;
 
-      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
       @if (not index($_doclet-store, $_doclet)) {
         // stylelint-disable
   /* ---
@@ -1159,17 +951,6 @@ Will Generate:
   including before the first item and after the last.
 
   ** Use with care. Only available with flexbox. No fallback. **
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: space-around[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
 
 
   #### Usage example:
@@ -1185,10 +966,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(space-around);
-  ```
 
   ** CSS output: **
 
@@ -1216,14 +993,14 @@ Will Generate:
 
   @each $gutter-modifier, $gutter-spacing in $jigsass-grid-gutter-modifiers {
     @if (unitless($gutter-spacing)) {
-      $_is-unitless: true;
-      $_gutter: jigsass-rhythm($gutter-spacing);
-      $_width-description: unquote('that of #{$gutter-spacing} base rhythm units')
+      $_jigsass-current-gutter: jigsass-rhythm($gutter-spacing) !global;
+      $_jigsass-current-width-description: unquote(
+        'that of #{$gutter-spacing} base rhythm units'
+      ) !global;
     }
     @else {
-      $_is-unitless: false;
-      $_gutter: jigsass-convert-length($gutter-spacing);
-      $_width-description: unquote('#{$gutter-spacing}')
+      $_jigsass-current-gutter-gutter: jigsass-convert-length($gutter-spacing) !global;
+      $_jigsass-current-width-description: unquote('#{$gutter-spacing}') !global;
     }
 
     // 1. Modify gutter widths.
@@ -1232,15 +1009,15 @@ Will Generate:
     //    specificity low. This works, as only grid items are
     //    legitimate children of grid containers.
     @include jigsass-classname($modifier: #{$gutter-modifier}) {
-      margin-left: $_gutter / -2;
-      margin-right: $_gutter / -2;
+      margin-left: $_jigsass-current-gutter / -2;
+      margin-right: $_jigsass-current-gutter / -2;
 
       & > * {  // [1]
-        padding-left: $_gutter / 2;
-        padding-right: $_gutter / 2;
+        padding-left: $_jigsass-current-gutter / 2;
+        padding-right: $_jigsass-current-gutter / 2;
       }
 
-      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
       @if (not index($_doclet-store, $_doclet)) {
         // stylelint-disable
   /* ---
@@ -1248,13 +1025,7 @@ Will Generate:
   title: #{$_grid-class}--#{$gutter-modifier}
   order: 11
   ---
-  Modify the width of column gutters to #{$_width-description}
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid($modifier: #{$gutter-modifier}[, $from, $until, $misc]);
-  ```
+  Modify the width of column gutters to #{$_jigsass-current-width-description}
 
 
   #### Related Variables:
@@ -1263,30 +1034,20 @@ Will Generate:
     denoting amounts of rhythm units to serve as gutter-width in each modifier.
 
 
-  #### Related Mixins:
-  [jigsass-grid](#grid-container-mixin): Generates a grid-container class or modifier,
-  which can be responsive (i.e., limited to a certain media-query)
-
-
   #### Usage example:
   ```example:html
   <!-- In HTML -->
   <section class='#{$_grid-class} #{$_grid-class}--#{$gutter-modifier}'>
-  <div class='#{$_item-class}'>
-  <div class='fpo'>Item 1</div>
-  </div>
-  <div class='#{$_item-class}'>
-  <div class='fpo'>Item 2</div>
-  </div>
-  <div class='#{$_item-class}'>
-  <div class='fpo'>Item 3</div>
-  </div>
+    <div class='#{$_item-class}'>
+      <div class='fpo'>Item 1</div>
+    </div>
+    <div class='#{$_item-class}'>
+      <div class='fpo'>Item 2</div>
+    </div>
+    <div class='#{$_item-class}'>
+      <div class='fpo'>Item 3</div>
+    </div>
   </section>
-  ```
-
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid(#{$gutter-modifier});
   ```
 
   ** CSS output: **
@@ -1294,8 +1055,8 @@ Will Generate:
   ```scss
   // --- CSS --- //
   .#{$_grid-class}--#{$gutter-modifier} {
-    margin-left: #{$_gutter / -2};
-    margin-right: #{$_gutter / -2};
+    margin-left: #{$_jigsass-current-gutter / -2};
+    margin-right: #{$_jigsass-current-gutter / -2};
   }
 
   // Targets direct descendants using the universal selector
@@ -1303,8 +1064,8 @@ Will Generate:
   // specificity low. This works, as only grid items are
   // legitimate children of #{$_grid-class}.
   .#{$_grid-class}--#{$gutter-modifier} > * {
-    padding-left: #{$_gutter / 2};
-    padding-right: #{$_gutter / 2};
+    padding-left: #{$_jigsass-current-gutter / 2};
+    padding-right: #{$_jigsass-current-gutter / 2};
   }
   ```
   */
@@ -1312,5 +1073,6 @@ Will Generate:
         $_doclet-store: append($_doclet-store, $_doclet) !global;
       }
     }
+    $_jigsass-current-gutter-gutter: null !global;
   }
 }

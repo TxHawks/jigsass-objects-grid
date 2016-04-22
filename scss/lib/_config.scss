@@ -201,3 +201,313 @@ $jigsass-grid-cols: 12 !default;
 /// @type Map
 /// ---
 $jigsass-grid-gutter-rules: (gutter-rule-1: 1px solid #ccc) !default;
+
+
+// stylelint-disable
+/* ---
+section: Grid
+title: CSS Outpout
+order: -2
+---
+By default, JigSass Grid does not generate any CSS output when imported into
+a stylesheet. CSS output must be enabled on a per-selector basis, inside the
+dedicated configuration maps:
+
+#### Grid container and grid container modifier classes
+```scss
+$jigsass-grid-config
+```
+
+**Type:** `Map`
+
+Configuration map for enabling generation of grid container and
+grid container modifier classes.
+
+
+**Default:**
+```scss
+$jigsass-grid-conf: (
+  no-breakpoint: (
+    no-modifier: false,
+
+    // Horizontal alignment modifiers
+    start: false,
+    center: false,
+    end: false,
+    rev: false,
+
+    // Vertical alignment modifiers
+    equal-height: false,
+    top: false,
+    middle: false,
+    bottom: false,
+
+    // Horizontal distribution modifiers
+    space-between: false,
+    space-around: false,
+
+    // gutter-width modifiers
+    // Enable gutter modifiers defined in
+    // `$jigsass-grid-gutter-modifiers` here.
+  ),
+);
+```
+
+
+**Example:**
+```scss
+$jigsass-grid-conf: (
+  no-breakpoint: (
+    no-modifier: true,  // Enables generation of the `.#{$jigsass-grid-class}`
+                        // class outside of any media query.
+    end: true,          // Enables generation of the `.#{$jigsass-grid-class}--end`
+                        // modifier class outside of any media query.
+  ),
+  from-<bp-name>: (
+    no-modifier: true,  // Enables generation of the `.#{$jigsass-grid-class}--from-<bp-name>`
+                        // class inside a min-width media query
+                        // defined ins `$jigsass-breakpoints.length`.
+    end: true,          // Enables generation of the `.#{$jigsass-grid-class}--end--from-<bp-name>`
+                        // class inside a min-width media query
+                        // defined ins `$jigsass-breakpoints.length`.
+  ),
+  until-<bp-name>: (
+    no-modifier: true,  // Enables generation of the `.#{$jigsass-grid-class}--until-<bp-name>`
+                        // class inside a max-width media query
+                        // defined ins `$jigsass-breakpoints.length`.
+   end: true,           // Enables generation of the `.#{$jigsass-grid-class}--end--until-<bp-name>`
+                        // class inside a max-width media query
+                        // defined ins `$jigsass-breakpoints.length`.
+  ),
+  when-<bp-name>: (
+    no-modifier: true,  // Enables generation of the `.#{$jigsass-grid-class}--when-<bp-name>`
+                        // class inside a misc media query
+                        // defined ins `$jigsass-breakpoints.features`.
+    end: true,          // Enables generation of the `.#{$jigsass-grid-class}--end--when-<bp-name>`
+                        // class inside a misc media query
+                        // defined ins `$jigsass-breakpoints.features`.
+  ),
+  from-<bp-name>-until-<bp-name>: (...);
+  from-<bp-name>-when-<bp-name>: (...);
+  until-<bp-name>-when-<bp-name>: (...);
+  from-<bp-name>-until-<bp-name>-when-<bp-name>: (...);
+);
+```
+
+
+#### Grid item and grid item modifier classes
+```scss
+$jigsass-grid-item-config
+```
+
+**Type:** `Map`
+
+Configuration map for enabling generation of
+grid item and grid item modifier classes
+
+
+**Default:**
+```scss
+$jigsass-grid-item-conf: (
+  no-breakpoint: (
+    no-modifier: false,
+    col: false,
+    fixed: false,
+    center: false,
+
+    // Enable item specific gutter width modifiers
+    // defined in `$jigsass-grid-gutter-modifiers`
+    // here.
+
+    // Enable item width modifiers
+    // based on ratios defined in
+    // `$jigsass-grid-cols`here.
+
+    // Enable item offset modifiers
+    // based on ratios defined in
+    // `$jigsass-grid-cols`here.
+
+    // Enable gutter rule modifiers defined
+    // in `$jigsass-grid-gutter-rules` here
+  ),
+);
+```
+
+
+**Example:**
+```scss
+$jigsass-grid-item-conf: (
+  no-breakpoint: (
+    no-modifier: true,  // Enables generation of the `.#{$jigsass-grid-item-class}`
+                        // class outside of any media query.
+    col: true,          // Enables generation of the `.#{$jigsass-grid-item-class}--col`
+                        // modifier class outside of any media query.
+  ),
+  from-<bp-name>: (
+    no-modifier: true,  // Enables generation of the `.#{$jigsass-grid-item-class}--from-<bp-name>`
+                        // class inside a min-width media query
+                        // defined ins `$jigsass-breakpoints.length`.
+    col: true,          // Enables generation of the `.#{$jigsass-grid-item-class}--col--from-<bp-name>`
+                        // class inside a min-width media query
+                        // defined ins `$jigsass-breakpoints.length`.
+  ),
+  until-<bp-name>: (
+    no-modifier: true,  // Enables generation of the `.#{$jigsass-grid-item-class}--until-<bp-name>`
+                        // class inside a max-width media query
+                        // defined ins `$jigsass-breakpoints.length`.
+    col: true,          // Enables generation of the `.#{$jigsass-grid-item-class}--col--until-<bp-name>`
+                        // class inside a max-width media query
+                        // defined ins `$jigsass-breakpoints.length`.
+  ),
+  when-<bp-name>: (
+    no-modifier: true,  // Enables generation of the `.#{$jigsass-grid-item-class}--when-<bp-name>`
+                        // class inside a misc media query
+                        // defined ins `$jigsass-breakpoints.features`.
+    col: true,          // Enables generation of the `.#{$jigsass-grid-item-class}--col--when-<bp-name>`
+                        // class inside a misc media query
+                        // defined ins `$jigsass-breakpoints.features`.
+  ),
+  from-<bp-name>-until-<bp-name>: (...);
+  from-<bp-name>-when-<bp-name>: (...);
+  until-<bp-name>-when-<bp-name>: (...);
+  from-<bp-name>-until-<bp-name>-when-<bp-name>: (...);
+);
+```
+*/
+/// Configuration map for enabling generation of
+/// grid container and grid container modifier
+/// classes.
+/// ---
+/// @example
+///		$jigsass-grid-conf: (
+///    no-breakpoint: (
+///      no-modifier: true,  // Enables generation of the `.o-grid`
+///                          // class outside of any media query.
+///      end: true,          // Enables generation of the `.o-grid--end`
+///                          // modifier class outside of any media query.
+///    ),
+///    from-<bp-name>: (
+///      no-modifier: true,  // Enables generation of the `.o-grid--from-<bp-name>`
+///                          // class inside a min-width media query
+///                          // defined ins `$jigsass-breakpoints.length`.
+///      end: true,          // Enables generation of the `.o-grid--end--from-<bp-name>`
+///                          // class inside a min-width media query
+///                          // defined ins `$jigsass-breakpoints.length`.
+///    ),
+///    until-<bp-name>: (
+///      no-modifier: true,  // Enables generation of the `.o-grid--until-<bp-name>`
+///                          // class inside a max-width media query
+///                          // defined ins `$jigsass-breakpoints.length`.
+///     end: true,           // Enables generation of the `.o-grid--end--until-<bp-name>`
+///                          // class inside a max-width media query
+///                          // defined ins `$jigsass-breakpoints.length`.
+///    ),
+///    when-<bp-name>: (
+///      no-modifier: true,  // Enables generation of the `.o-grid--when-<bp-name>`
+///                          // class inside a misc media query
+///                          // defined ins `$jigsass-breakpoints.features`.
+///      end: true,          // Enables generation of the `.o-grid--end--when-<bp-name>`
+///                          // class inside a misc media query
+///                          // defined ins `$jigsass-breakpoints.features`.
+///    ),
+///    from-<bp-name>-until-<bp-name>: (...);
+///    from-<bp-name>-when-<bp-name>: (...);
+///    until-<bp-name>-when-<bp-name>: (...);
+///    from-<bp-name>-until-<bp-name>-when-<bp-name>: (...);
+///  );
+/// ---
+/// @type {Map}
+/// ---
+$jigsass-grid-conf: (
+  no-breakpoint: (
+    no-modifier: false,
+
+    // Horizontal alignment modifiers
+    start: false,
+    center: false,
+    end: false,
+    rev: false,
+
+    // Vertical alignment modifiers
+    equal-height: false,
+    top: false,
+    middle: false,
+    bottom: false,
+
+    // Horizontal distribution modifiers
+    space-between: false,
+    space-around: false,
+
+    // gutter-width modifiers
+    // Enable gutter modifiers defined in
+    // `$jigsass-grid-gutter-modifiers` here.
+  ),
+) !default;
+
+
+/// Configuration map for enabling generation of
+/// grid item and grid item modifier classes
+/// ---
+/// @example
+///		$jigsass-grid-item-conf: (
+///    no-breakpoint: (
+///      no-modifier: true,  // Enables generation of the `.o-grid__item`
+///                          // class outside of any media query.
+///      col: true,          // Enables generation of the `.o-grid__item--col`
+///                          // modifier class outside of any media query.
+///    ),
+///    from-<bp-name>: (
+///      no-modifier: true,  // Enables generation of the `.o-grid__item--from-<bp-name>`
+///                          // class inside a min-width media query
+///                          // defined ins `$jigsass-breakpoints.length`.
+///      col: true,          // Enables generation of the `.o-grid__item--col--from-<bp-name>`
+///                          // class inside a min-width media query
+///                          // defined ins `$jigsass-breakpoints.length`.
+///    ),
+///    until-<bp-name>: (
+///      no-modifier: true,  // Enables generation of the `.o-grid__item--until-<bp-name>`
+///                          // class inside a max-width media query
+///                          // defined ins `$jigsass-breakpoints.length`.
+///      col: true,          // Enables generation of the `.o-grid__item--col--until-<bp-name>`
+///                          // class inside a max-width media query
+///                          // defined ins `$jigsass-breakpoints.length`.
+///    ),
+///    when-<bp-name>: (
+///      no-modifier: true,  // Enables generation of the `.o-grid__item--when-<bp-name>`
+///                          // class inside a misc media query
+///                          // defined ins `$jigsass-breakpoints.features`.
+///      col: true,          // Enables generation of the `.o-grid__item--col--when-<bp-name>`
+///                          // class inside a misc media query
+///                          // defined ins `$jigsass-breakpoints.features`.
+///    ),
+///    from-<bp-name>-until-<bp-name>: (...);
+///    from-<bp-name>-when-<bp-name>: (...);
+///    until-<bp-name>-when-<bp-name>: (...);
+///    from-<bp-name>-until-<bp-name>-when-<bp-name>: (...);
+///  );
+/// ---
+/// @type {Map}
+/// ---
+$jigsass-grid-item-conf: (
+  no-breakpoint: (
+    no-modifier: false,
+    col: false,
+    fixed: false,
+    center: false,
+
+    // Enable item specific gutter width modifiers
+    // defined in `$jigsass-grid-gutter-modifiers`
+    // here.
+
+    // Enable item width modifiers
+    // based on ratios defined in
+    // `$jigsass-grid-cols`here.
+
+    // Enable item offset modifiers
+    // based on ratios defined in
+    // `$jigsass-grid-cols`here.
+
+    // Enable gutter rule modifiers defined
+    // in `$jigsass-grid-gutter-rules` here
+  ),
+) !default;

@@ -16,19 +16,19 @@
 // -------------------------------------
 
 @if (not function-exists(jigsass-get)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-maps. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-maps. Please import it.';
 }
 @if (not mixin-exists(jigsass-mq)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-mq. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-mq. Please import it.';
 }
 @if (not function-exists(jigsass-rhythm)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-typography`. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-typography`. Please import it.';
 }
 @if (not mixin-exists(jigsass-bidi)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.'
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-bidi`. Please import it.';
 }
-@if (not mixin-exists(jigsass-define-object)) {
-  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
+@if (not mixin-exists(jigsass-object)) {
+  @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.';
 }
 
 
@@ -39,60 +39,7 @@
 // Mixins
 // -------------------------------------
 
-// stylelint-disable
-/* ---
-section: Grid
-title: Grid item mixin
-order: 3
----
-```scss
-@mixin jigsass-grid-item($modifier: false, $from: false, $until: false, $misc: false) { ... }
-```
-
-#### Description
-Generate a grid-item class or modifier, which can be responsive (i.e., limited to
-certain breakpoint defined in [$jigsass-breakpoints](https://txhawks.github.io/jigsass-tools-mq/#variable-jigsass-breakpoints)).
-
-#### Parameters
-Name | Description | Type | Default Value
---- | --- | --- | ---
-`$modifier` | A grid-item modifier, e.g., `center` | `String` or `Boolean` | false
-`$from` | The name of breakpoint used as the min-width condition | `String` or `Boolean` | false
-`$until` | The name of breakpoint used as the max-width condition | `String` or `Boolean` | false
-`$misc` | The name of a miscellaneous media query condition | `String` or `Boolean` | false
-
-#### Example
-```scss
-@include jigsass-grid-item($modifier: center, $from: small, $until: large, $misc: landscape) { ... }
-```
-Will Generate:
-```css
-@media (min-width: 30em) and (max-width: 63.99em) and (orientation: landscape) {
- .o-grid__item--center--from-small-until-large-when-landscape { ... }
-}
-```
-*/
-
-// stylelint-enable
-/// Generate a grid-item class or modifier, which can be
-/// responsive (i.e., limited to a certain media-query)
-/// ---
-/// @param {String | Boolean} $modifier
-///   A grid-item modifier, e.g., `equal-height`
-/// @param {String | Boolean} $from
-///   The name of breakpoint used as the min-width condition.
-/// @param {String | Boolean} $until
-///   The name of breakpoint used as the max-width condition.
-/// @param {String | Boolean} $misc
-///   The name of a miscellaneous media query condition.
-/// ---
-@mixin jigsass-grid-item($modifier: false, $from: false, $until: false, $misc: false) {
-  @if (not mixin-exists(jigsass-object)) {
-    @error '`jigsass-objects-grid` has a dependency on `jigsass-tools-selectors. Please import it.'
-  }
-
-  @include jigsass-object(#{$jigsass-grid-item-class}, $from, $until, $misc, $modifier)
-}
+//
 
 
 
@@ -126,7 +73,7 @@ Will Generate:
 // Definitions
 // -------------------------------------
 
-@include jigsass-define-object($jigsass-grid-item-class) {
+@include jigsass-object($jigsass-grid-item-class, $jigsass-grid-item-conf) {
   // Add namespace to class names
   $_ns: if($jigsass-namespace == '', '', #{$jigsass-namespace}-);
   $_grid-class: #{$_ns}#{$jigsass-grid-class};
@@ -138,7 +85,7 @@ Will Generate:
   // 2. Allows lists to be grids.
   // ---
   @include jigsass-classname() {
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
 
     box-sizing: border-box; // [1]
     list-style: none; // [2]
@@ -211,17 +158,6 @@ Will Generate:
     class-name used for grid containers.
 
 
-  #### include with:
-  ```scss
-  @include jigsass-grid-item([$modifier, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
-  which can be responsive (i.e., limited to a certain media-query).
-
-
   #### Usage example:
   ```example:html
   <!-- In HTML -->
@@ -250,10 +186,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid-item();
-  ```
 
   ** CSS output: **
 
@@ -307,7 +239,7 @@ Will Generate:
   // ---
   @if ($jigsass-grid-flexbox) {
     @include jigsass-classname($modifier: col) {
-      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
 
       flex-direction: column;
 
@@ -322,17 +254,6 @@ Will Generate:
   `--equal-height` grid container modifier.
 
   Only available when flexbox is supported.
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid-item(col[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
-  which can be responsive (i.e., limited to a certain media-query).
 
 
   #### Usage example:
@@ -355,10 +276,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid-item(col);
-  ```
 
   ** CSS output: **
 
@@ -381,7 +298,7 @@ Will Generate:
   // ---
   @if ($jigsass-grid-flexbox) {
     @include jigsass-classname($modifier: col) {
-      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
 
       flex-grow: 0;
       flex-shrink: 0;
@@ -399,17 +316,6 @@ Will Generate:
   Depends on utility classes setting max-width and flex-basis.
 
   Only available when flexbox is supported.
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid-item(fixed[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
-  which can be responsive (i.e., limited to a certain media-query).
 
 
   #### Usage example:
@@ -445,10 +351,6 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid-item(fixed);
-  ```
 
   ** CSS output: **
 
@@ -471,7 +373,7 @@ Will Generate:
   // Prevents a grid item from growing or shrinking
   // ---
   @include jigsass-classname($modifier: center) {
-    $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+    $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
 
     display: block;
     margin-left: auto;
@@ -485,17 +387,6 @@ Will Generate:
   order: 4
   ---
   Horizontaly centers a single grid inside it's grid container.
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid-item(center[, $from, $until, $misc]);
-  ```
-
-
-  #### Related Mixins:
-  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
-  which can be responsive (i.e., limited to a certain media-query).
 
 
   #### Usage example:
@@ -516,11 +407,6 @@ Will Generate:
       <div class='fpo'></div>
     </div>
   </section>
-  ```
-
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid-item(center);
   ```
 
   ** CSS output: **
@@ -545,28 +431,28 @@ Will Generate:
 
 
   // -------------------------------------
-  // Gutter Size Modifiers
+  // Gutter Width Modifiers
   // -------------------------------------
 
   @each $gutter-modifier, $gutter-spacing in $jigsass-grid-gutter-modifiers {
     @if (unitless($gutter-spacing)) {
-      $_is-unitless: true;
-      $_gutter: jigsass-rhythm($gutter-spacing);
-      $_width-description: unquote('that of #{$gutter-spacing} base rhythm units')
+      $_jigsass-current-gutter: jigsass-rhythm($gutter-spacing) !global;
+      $_jigsass-current-width-description: unquote(
+        'that of #{$gutter-spacing} base rhythm units'
+      ) !global;
     }
     @else {
-      $_is-unitless: false;
-      $_gutter: jigsass-convert-length($gutter-spacing);
-      $_width-description: unquote('#{$gutter-spacing}')
+      $_jigsass-current-gutter: jigsass-convert-length($gutter-spacing) !global;
+      $_jigsass-current-width-description: unquote('#{$gutter-spacing}') !global;
     }
 
     // Modify item-level gutter widths
     @include jigsass-classname($modifier: #{$gutter-modifier}) {
-      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
 
-      @include jigsass-bidi(padding-end, $_gutter / 2);
+      @include jigsass-bidi(padding-end, $_jigsass-current-gutter / 2);
 
-      & + * { @include jigsass-bidi(padding-start, $_gutter / 2); }
+      & + * { @include jigsass-bidi(padding-start, $_jigsass-current-gutter / 2); }
 
       @if (not index($_doclet-store, $_doclet)) {
       // stylelint-disable
@@ -576,26 +462,15 @@ Will Generate:
   order: 5
   ---
   Modify the width of a gutter between an individual grid item
-  and the next one to #{$_width-description}.
+  and the next one to #{$_jigsass-current-width-description}.
 
   ** Do not set item-level gutter modifiers on items in the last column of a grid. **
-
-
-  #### include with:
-  ```scss
-  @include jigsass-grid-item($modifier: #{$gutter-modifier}[, $from, $until, $misc]);
-  ```
 
 
   #### Related Variables:
   - `$jigsass-grid-gutter-modifiers`: Specifies the gutter-width modifiers that can be generated.
     A map of modifiers, where each key is a modifier's name and value is a unitless numbers
     denoting amounts of rhythm units to serve as gutter-width in each modifier.
-
-
-  #### Related Mixins:
-  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
-  which can be responsive (i.e., limited to a certain media-query).
 
 
   #### Usage example:
@@ -614,17 +489,14 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid-item(#{$gutter-modifier});
-  ```
+
   ** CSS output: **
 
   ```scss
   // --- CSS --- //
   .#{$_item-class}--#{$gutter-modifier} {
-    padding-left: #{$_gutter / 2};
-    padding-right: #{$_gutter / 2};
+    padding-left: #{$_jigsass-current-gutter / 2};
+    padding-right: #{$_jigsass-current-gutter / 2};
   }
   ```
   */
@@ -632,6 +504,9 @@ Will Generate:
         $_doclet-store: append($_doclet-store, $_doclet) !global;
       }
     }
+
+    $_jigsass-current-gutter: null !global;
+    $_jigsass-current-width-description: null !global;
   }
 
 
@@ -678,7 +553,8 @@ Will Generate:
         $_classes: $_base-class + '#{$_item-class}--#{$ratio}-of-#{$ratio} ';
 
         // stylelint-disable
-        $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+        $_html: $_html + '
+          <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
         // stylelint-enable
       }
       @else if ($i % 2 == 0) {
@@ -687,7 +563,8 @@ Will Generate:
           '#{$_item-class}--#{$i}-of-#{$ratio}--from-medium';
 
         // stylelint-disable
-        $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+        $_html: $_html + '
+          <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
         // stylelint-enable
 
         $_classes: $_base-class +
@@ -695,7 +572,8 @@ Will Generate:
           '#{$_item-class}--#{$ratio - $i}-of-#{$ratio}--from-medium';
 
         // stylelint-disable
-        $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+        $_html: $_html + '
+          <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
         // stylelint-enable
       }
       @else {
@@ -704,7 +582,8 @@ Will Generate:
           '#{$_item-class}--#{$ratio - $i}-of-#{$ratio}--from-medium';
 
         // stylelint-disable
-        $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+        $_html: $_html + '
+          <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
         // stylelint-enable
 
         $_classes: $_base-class +
@@ -712,12 +591,14 @@ Will Generate:
           '#{$_item-class}--#{$i}-of-#{$ratio}--from-medium';
 
         // stylelint-disable
-        $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+        $_html: $_html + '
+          <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
         // stylelint-enable
       }
     }
 
-    $_html: $_html + '</section>';
+    $_html: $_html + '
+    </section>';
 
     @if (not index($_doclet-store, $_doclet)) {
     // stylelint-disable
@@ -757,21 +638,10 @@ Will Generate:
   and a predictable cascade.
 
 
-  #### include with:
-  ```scss
-  @include jigsass-grid-item($modifier: X-of#{$ratio}[, $from, $until, $misc]);
-  ```
-
-
   #### Related Variables:
   - `$jigsass-grid-cols` (defalut: `12`): Holds a list of unitless numbers, each number is an
     available column count. E.g., if `$jigsass-grid-cols: 10 12;`, you will be able to create
     `x`-of-10 and `x`-of-12 classes.
-
-
-  #### Related Mixins:
-  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
-  which can be responsive (i.e., limited to a certain media-query).
 
 
   #### Usage example:
@@ -780,10 +650,7 @@ Will Generate:
   #{unquote($_html)}
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid-item(X-of-#{$ratio});
-  ```
+
   ** CSS output: **
 
   ```scss
@@ -819,7 +686,7 @@ Will Generate:
   // -------------------------------------
 
   @each $ratio in $jigsass-grid-cols {
-    $_doclet: 'offsets-' + $ratio + '-cols';
+    $_doclet: 'offsets-' + $ratio + '-offset';
     // stylelint-disable
     $_html: '<section class="#{$_grid-class}">';
     // stylelint-enable
@@ -841,12 +708,14 @@ Will Generate:
           '#{$_item-class}--offset-#{$ratio - $i}-of-#{$ratio}';
 
         // stylelint-disable
-        $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+        $_html: $_html + '
+          <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
         // stylelint-enable
       }
     }
 
-    $_html: $_html + '</section>';
+    $_html: $_html + '
+    </section>';
 
     @if (not index($_doclet-store, $_doclet)) {
     // stylelint-disable
@@ -858,21 +727,10 @@ Will Generate:
   Offset a grid item by X of #{$ratio} columns.
 
 
-  #### include with:
-  ```scss
-  @include jigsass-grid-item($modifier: offset-X-of#{$ratio}[, $from, $until, $misc]);
-  ```
-
-
   #### Related Variables:
   - `$jigsass-grid-cols` (defalut: `12`): Holds a list of unitless numbers, each number is an
     available column count. E.g., if `$jigsass-grid-cols: 10 12;`, you will be able to create
     `x`-of-10 and `x`-of-12 classes.
-
-
-  #### Related Mixins:
-  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
-  which can be responsive (i.e., limited to a certain media-query).
 
 
   #### Usage example:
@@ -881,10 +739,6 @@ Will Generate:
   #{unquote($_html)}
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid-item(offset-#{$ratio / 2}-of-#{$ratio});
-  ```
 
   ** CSS output: **
 
@@ -911,7 +765,7 @@ Will Generate:
 
   @each $rule-modifier, $rule-style in $jigsass-grid-gutter-rules {
     @include jigsass-classname($modifier: #{$rule-modifier}) {
-      $_doclet: $jigsass-obj-current-name + ($jigsass-obj-current-modifier or '');
+      $_doclet: $jigsass-obj-name + ($jigsass-obj-modifier or '');
 
       // Create positioning context for column rule pseudo element
       position: relative;
@@ -937,21 +791,10 @@ Will Generate:
   Set a gutter rule on a grid item, visually setting it apart from the preciding grid item.
 
 
-  #### include with:
-  ```scss
-  @include jigsass-grid-item($modifier: #{$rule-modifier}[, $from, $until, $misc]);
-  ```
-
-
   #### Related Variables:
   - `$jigsass-grid-gutter-rules`: Specifies styles for column rule modifiers<br />
     A map where each key is a modifier's name, and its value is
     the border style to apply to that modifier's column rule.
-
-
-  #### Related Mixins:
-  [jigsass-grid-item](#grid-item-mixin): Generates a grid-item class or modifier,
-  which can be responsive (i.e., limited to a certain media-query).
 
 
   #### Usage example:
@@ -968,16 +811,25 @@ Will Generate:
   </section>
   ```
 
-  ```scss
-  // --- In Sass --- //
-  @include jigsass-grid-item(#{$rule-modifier});
-  ```
+
   ** CSS output: **
 
   ```scss
   // --- CSS --- //
   .#{$_item-class}--#{$rule-modifier} {
-    padding-(left|right): #{$_gutter};
+    // Create positioning context for column rule pseudo element
+    position: relative;
+
+    #{&}:before {
+      border-left: #{$rule-style};
+      bottom: 0;
+      content: '';
+      display: block;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+    }
   }
   ```
   */

@@ -30,7 +30,7 @@ title: Introduction
 order: -10
 ---
 
-[![NPM version][npm-image]][npm-url]  [![Dependency Status][daviddm-image]][daviddm-url]
+**[GitHub Page](https://www.github.com/TxHawks/jigsass-objects-grid)**
 
 JigSass Grid is a responsive Sass (SCSS) flexbox-based grid
 system, with a `display: inline-block` fallback backed in, where possible.
@@ -74,8 +74,9 @@ npm i -S jigsass-objects-grid
 
 
 #### Availeable classes
-All classes and each modifier (including responsive modifiers) must be explicitly `@include`d
-to be available in CSS (see [usage](#usage) below).
+For classes and modifiers (including responsive modifiers) to be generated in CSS
+output, they must be explicitly enabled in the [configuration maps](#css-output)
+(see [usage](#usage) below).
 
 
 ** Grid containers:**<br />
@@ -97,7 +98,7 @@ to be available in CSS (see [usage](#usage) below).
 
 #### Usage
 
-First, you would need to import JigSass Grid:
+First, import JigSass Grid into your main stylesheet:
 
 ```scss
 @import 'path/to/jigsass-objects-grid/scss/index'
@@ -105,32 +106,57 @@ First, you would need to import JigSass Grid:
 
 And optionally [reconfigure](#configuration) the defaults to you liking.
 
-To create a grid context, simply attach the #{$_grid-class} class to an element, Any element,
+To create a grid context, simply attach the #{$_grid-class} class to an element, any element,
 which will serve as a grid container. You can now add grid items to it (with a class of
 #{$_item-class}). Grid containers' only legitimate children are grid items, and those, in turen,
 may only reside within a grid container.
 
-Like all other JigSass modules, JigSass Grid does not automatically generate any CSS on import.
-In order to use its classes, you would have to first explicitly indicate your intention to use
-them, using the [jigsass-grid](#jigsass-grid) or [jigsass-grid-item](#jigsass-grid-item) mixins.
-This way our css remains small and maintainable:
+Like all other JigSass modules, JigSass Grid does not automatically generate any
+CSS output when imported. In order to use its classes, you would have to first
+explicitly indicate your intention to use them by enabling their generation in
+the associated [configurations map](#css-output), Leaving us only with CSS we need.
+
+All JigSass Grid classes are responsive-enabled, using
+[JigSass MQ](https://txhawks.github.io/jigsass-tools-mq/) and the breakpoints defined in the
+[$jigsass-breakpoints](https://txhawks.github.io/jigsass-tools-mq/#variable-jigsass-breakpoints)
+variable.
+
+Based on enabled selectors in the [configuration map](#css-output), responsive modifiers are
+generated according to the following logic:
 
 ```scss
-@include jigsass-grid([$modifier, $from-brekpoint, $until-breakpoint, $misc-breakpoint]);
-@include jigsass-grid-item([$modifier, $from-brekpoint, $until-breakpoint, $misc-breakpoint]);
+.o-grid[--modifier][-[-from-{breakpoint-name}][-until-{breakpoint-name}][-misc-{breakpoint-name}]]
+.o-grid__item[--modifier][-[-from-{breakpoint-name}][-until-{breakpoint-name}][-misc-{breakpoint-name}]]
 ```
 
-Regardless of how many times a class is included, or where, it will only be generated once, where
-`jigsass-objects-grid` was imported to our main sass file, leaving us with a css file as small as
-possible, and a predictable cascade for more example, see [here](#responsive).
+So, assuming the `medium`, `large` and `landscape` breakpoints are defined in `$jigsass-breakpoints`
+as `600px`, `1024px` and `(orientation: landscape)` respectively,
 
 
+```scss
+$jigsass-grid-conf: (
+  no-breakpoint: (
+    no-modifier: true,
+    end: true,
+  ),
+  until-medium: (
+    end: true,
+  ),
+  from-large-when-landscape: (
+    end: true,
+  ),
+)
+```
 
-[npm-image]: https://badge.fury.io/js/jigsass-objects-grid.svg
-[npm-url]: https://npmjs.org/package/jigsass-objects-grid
-
-[daviddm-image]: https://david-dm.org/TxHawks/jigsass-objects-grid.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/TxHawks/jigsass-objects-grid
+will generate the following classes:
+  - `.o-grid`, which is not limited to any media-query.
+  - `.o-grid--end`, which is not limited to any media-query.
+  - `.o-grid--end--until-medium`, which will be in effect at
+    `(max-width: 37.49em)` and will override styles in the default class
+    until that point.
+  - `.o-grid--end--from-large-when-landscape`, which will go into effect at
+    `(min-width: 64em) and (orientation: landscape)` and will override styles
+    in the default class under these  conditions.
 */
 
 
@@ -152,37 +178,43 @@ $_html: '<section class="#{$_grid-class}">';
   @if ($i == $_ratio) {
     $_classes: $_base-class + '#{$_item-class}--#{$_ratio}-of-#{$_ratio} ';
 
-    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+    $_html: $_html + '
+      <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
   }
   @else if ($i % 2 == 0) {
     $_classes: $_base-class +
       '#{$_item-class}--#{$_ratio / 2}-of-#{$_ratio} ' +
       '#{$_item-class}--#{$i}-of-#{$_ratio}--from-medium';
 
-    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+    $_html: $_html + '
+      <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
 
     $_classes: $_base-class +
       '#{$_item-class}--#{$_ratio / 2}-of-#{$_ratio} ' +
       '#{$_item-class}--#{$_ratio - $i}-of-#{$_ratio}--from-medium';
 
-    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+    $_html: $_html + '
+      <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
   }
   @else {
     $_classes: $_base-class +
       '#{$_item-class}--#{$_ratio / 2}-of-#{$_ratio} ' +
       '#{$_item-class}--#{$_ratio - $i}-of-#{$_ratio}--from-medium';
 
-    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+    $_html: $_html + '
+      <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
 
     $_classes: $_base-class +
       '#{$_item-class}--#{$_ratio / 2}-of-#{$_ratio} ' +
       '#{$_item-class}--#{$i}-of-#{$_ratio}--from-medium';
 
-    $_html: $_html + '<div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
+    $_html: $_html + '
+      <div class="#{unquote($_classes)}"><div class="fpo"></div></div>';
   }
 }
 
-$_html: $_html + '</section>';
+$_html: $_html + '
+</section>';
 
 /* ---
 section: Grid

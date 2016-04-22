@@ -31,6 +31,108 @@
 // Imports
 // --------------------
 
+@import 'lib/config';
+
+// --- Grid Container --- //
+$jigsass-grid-conf: (
+  no-breakpoint: (
+    no-modifier: true,
+
+    // Horizontal alignment modifiers
+    start: true,
+    center: true,
+    end: true,
+    rev: true,
+
+    // Vertical alignment modifiers
+    equal-height: true,
+    top: true,
+    middle: true,
+    bottom: true,
+
+    // Distribution modifiers
+    space-between: true,
+    space-around: true,
+  ),
+);
+
+// Gutter width modifiers
+$_gutter-modifiers: ();
+@each $gutter-mod, $gutter-w in $jigsass-grid-gutter-modifiers {
+  $_gutter-modifiers: map-merge(
+    $_gutter-modifiers,
+    ($gutter-mod: true)
+  );
+}
+$jigsass-grid-conf: jigsass-deep-merge(
+  $jigsass-grid-conf,
+  (no-breakpoint: $_gutter-modifiers)
+);
+
+// --- Grid Item --- //
+$jigsass-grid-item-conf: (
+  no-breakpoint: (
+    no-modifier: true,
+    col: true,
+    fixed: true,
+    center: true,
+    gutter-rule-1: true,
+  ),
+  from-large: (
+    no-modifier: true,
+  ),
+);
+
+// Item-level gutter width modifiers
+$_item-gutter-modifiers: ();
+@each $gutter-mod, $gutter-w in $jigsass-grid-gutter-modifiers {
+  $_item-gutter-modifiers: map-merge(
+    $_item-gutter-modifiers,
+    ($gutter-mod: true)
+  );
+}
+$jigsass-grid-item-conf: jigsass-deep-merge(
+  $jigsass-grid-item-conf,
+  (no-breakpoint: $_item-gutter-modifiers)
+);
+
+
+// Item width modifiers
+$_item-width-modifiers: ();
+@each $ratio in $jigsass-grid-cols {
+  @for $i from 1 through $ratio {
+    $_item-width-modifiers: map-merge(
+      $_item-width-modifiers,
+      (#{$i}-of-#{$ratio}: true)
+    );
+  }
+}
+$jigsass-grid-item-conf: jigsass-deep-merge(
+  $jigsass-grid-item-conf,
+  (
+    no-breakpoint: $_item-width-modifiers,
+    from-medium: $_item-width-modifiers
+  )
+);
+
+
+// Item offset modifiers
+$_item-offset-modifiers: ();
+@each $ratio in $jigsass-grid-cols {
+  @for $i from 1 through $ratio {
+    $_item-offset-modifiers: map-merge(
+      $_item-offset-modifiers,
+      (offset-#{$i}-of-#{$ratio}: true)
+    );
+  }
+}
+$jigsass-grid-item-conf: jigsass-deep-merge(
+  $jigsass-grid-item-conf,
+  (no-breakpoint: $_item-offset-modifiers)
+);
+
+
+
 @import 'index.scss';
 
 
@@ -41,61 +143,61 @@
 // Styles
 // --------------------
 // --- Grid Container --- //
-@include jigsass-grid;
-
-// Horizontal alignment modifiers
-@include jigsass-grid($modifier: start);
-@include jigsass-grid($modifier: center);
-@include jigsass-grid($modifier: end);
-@include jigsass-grid($modifier: rev);
-
-// Vertical alignment modifiers
-@include jigsass-grid($modifier: equal-height);
-@include jigsass-grid($modifier: top);
-@include jigsass-grid($modifier: middle);
-@include jigsass-grid($modifier: bottom);
-
-// Horizontal distribution modifiers
-@include jigsass-grid($modifier: space-between);
-@include jigsass-grid($modifier: space-around);
-
-// Gutter width modifiers
-@each $gutter-mod, $gutter-w in $jigsass-grid-gutter-modifiers {
-  @include jigsass-grid($modifier: $gutter-mod);
-}
-
-
-// --- Grid Item --- //
-@include jigsass-grid-item;
-@include jigsass-grid-item($from: large);
-
-// Modifiers
-@include jigsass-grid-item($modifier: col);
-@include jigsass-grid-item($modifier: fixed);
-@include jigsass-grid-item($modifier: center);
-
-// Item-level gutter-width modifiers
-@each $gutter-mod, $gutter-w in $jigsass-grid-gutter-modifiers {
-  @include jigsass-grid-item($modifier: $gutter-mod);
-}
-
-// Item-width modifiers
-@each $ratio in $jigsass-grid-cols {
-  @for $i from 1 through $ratio {
-    @include jigsass-grid-item($modifier: #{$i}-of-#{$ratio});
-    @include jigsass-grid-item($modifier: #{$i}-of-#{$ratio}, $from: medium);
-  }
-}
-
-// Item offset modifiers
-@each $ratio in $jigsass-grid-cols {
-  @for $i from 1 through $ratio {
-    @include jigsass-grid-item($modifier: offset-#{$i}-of-#{$ratio});
-  }
-}
-
-// Gutter rules modifiers
-@include jigsass-grid-item($modifier: gutter-rule-1);
+// @include jigsass-grid;
+//
+// // Horizontal alignment modifiers
+// @include jigsass-grid($modifier: start);
+// @include jigsass-grid($modifier: center);
+// @include jigsass-grid($modifier: end);
+// @include jigsass-grid($modifier: rev);
+//
+// // Vertical alignment modifiers
+// @include jigsass-grid($modifier: equal-height);
+// @include jigsass-grid($modifier: top);
+// @include jigsass-grid($modifier: middle);
+// @include jigsass-grid($modifier: bottom);
+//
+// // Horizontal distribution modifiers
+// @include jigsass-grid($modifier: space-between);
+// @include jigsass-grid($modifier: space-around);
+//
+// // Gutter width modifiers
+// @each $gutter-mod, $gutter-w in $jigsass-grid-gutter-modifiers {
+//   @include jigsass-grid($modifier: $gutter-mod);
+// }
+//
+//
+// // --- Grid Item --- //
+// @include jigsass-grid-item;
+// @include jigsass-grid-item($from: large);
+//
+// // Modifiers
+// @include jigsass-grid-item($modifier: col);
+// @include jigsass-grid-item($modifier: fixed);
+// @include jigsass-grid-item($modifier: center);
+//
+// // Item-level gutter-width modifiers
+// @each $gutter-mod, $gutter-w in $jigsass-grid-gutter-modifiers {
+//   @include jigsass-grid-item($modifier: $gutter-mod);
+// }
+//
+// // Item-width modifiers
+// @each $ratio in $jigsass-grid-cols {
+//   @for $i from 1 through $ratio {
+//     @include jigsass-grid-item($modifier: #{$i}-of-#{$ratio});
+//     @include jigsass-grid-item($modifier: #{$i}-of-#{$ratio}, $from: medium);
+//   }
+// }
+//
+// // Item offset modifiers
+// @each $ratio in $jigsass-grid-cols {
+//   @for $i from 1 through $ratio {
+//     @include jigsass-grid-item($modifier: offset-#{$i}-of-#{$ratio});
+//   }
+// }
+//
+// // Gutter rules modifiers
+// @include jigsass-grid-item($modifier: gutter-rule-1);
 
 
 // --------------------
